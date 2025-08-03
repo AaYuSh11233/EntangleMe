@@ -18,7 +18,7 @@ We built **Entangleme** to explore how quantum teleportation could work as a mes
 
 ---
 
-## Why Entangleme Matters ? (🔅 USP)
+## Why EntangleMe Matters ? (🔅USP)
 
 Entangleme isn’t just a hackathon demo—it’s a glimpse into the future of secure, low-latency, web-integrated quantum communication. Here’s how:
 
