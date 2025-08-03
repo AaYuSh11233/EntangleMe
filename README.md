@@ -38,6 +38,8 @@ To simplify or scale the quantum backend, we explored using **Classiq**, a high-
 - 📽 **Demo Video:** [YouTube / Loom Link]
 - 🚀 **Devpost Project:** [https://devpost.com/software/entangleme]
 - 🎯 **Hackathon:** [https://cqhack25.devpost.com/]
+- 📄 **View Full Documentation:** (https://github.com/dev-Ninjaa/EntangleMe/blob/main/docs.md)
+
 
 ---
 
