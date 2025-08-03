@@ -29,10 +29,10 @@ We built **Entangleme** to explore how quantum teleportation could work as a mes
 
 ## 🌐 Links
 
-- 🔗 **Prototype Website:** [your-site-url.vercel.app](#)
-- 📽 **Demo Video:** [YouTube / Loom Link](#)
-- 🚀 **Devpost Project:** [https://devpost.com/software/entangleme](#)
-- 🎯 **Hackathon:** [https://cqhack25.devpost.com/](#)
+- 🔗 **Prototype Website:** [your-site-url.vercel.app]
+- 📽 **Demo Video:** [YouTube / Loom Link]
+- 🚀 **Devpost Project:** [https://devpost.com/software/entangleme]
+- 🎯 **Hackathon:** [https://cqhack25.devpost.com/]
 
 ---
 
@@ -40,9 +40,9 @@ We built **Entangleme** to explore how quantum teleportation could work as a mes
 
 | Role        | Name         | GitHub / Profile Link |
 |-------------|--------------|------------------------|
-| 🧠 Lead     | Md Athar Jamal Makki  | [@atharhive](#)       |
-| 🎨 Frontend | [Member 2]   | [@frontenddev](#)      |
-| 🛠 Backend  | [Member 3]   | [@backenddev](#)       |
+| 🧠 Lead     | Md Athar Jamal Makki  | [@atharhive]       |
+| 🎨 Frontend | [Member 2]   | [@frontenddev]     |
+| 🛠 Backend  | [Member 3]   | [@backenddev]      |
 
 ---
 
