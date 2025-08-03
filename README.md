@@ -41,8 +41,8 @@ We built **Entangleme** to explore how quantum teleportation could work as a mes
 | Role        | Name         | GitHub / Profile Link |
 |-------------|--------------|------------------------|
 | 🧠 Lead     | Md Athar Jamal Makki  | [@atharhive]       |
-| 🎨 Frontend | [Member 2]   | [@frontenddev]     |
-| 🛠 Backend  | [Member 3]   | [@backenddev]      |
+| 🎨 Frontend | Akshad Jogi  | [@akshad-exe]     |
+| 🛠 Backend  | Ayush Sarkar  | [@dev-Ninjaa]      |
 
 ---
 
