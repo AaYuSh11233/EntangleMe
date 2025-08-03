@@ -31,7 +31,7 @@ We built **Entangleme** to explore how quantum teleportation could work as a mes
 
 - 🔗 **Prototype Website:** [your-site-url.vercel.app](#)
 - 📽 **Demo Video:** [YouTube / Loom Link](#)
-- 🚀 **Devpost Project:** [https://devpost.com/software/entangleme?ref_content=user-portfolio&ref_feature=in_progress](#)
+- 🚀 **Devpost Project:** [https://devpost.com/software/entangleme](#)
 - 🎯 **Hackathon:** [https://cqhack25.devpost.com/](#)
 
 ---
