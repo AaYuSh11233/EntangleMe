@@ -72,4 +72,18 @@ We actually built this messaging app—**Entangleme**—using real quantum telep
 
 **Entangle two qubits → encode → Bell measurement → send classical bits → apply corrections.**
 
-This is the exact foundation of real quantum communication systems and quantum internet research.
+This is the exact foundation of real quantum communication systems and quantum internet research. 
+
+## 🔑 Key Resources
+
+* **Qiskit & Quantum Computing**
+    * [Qiskit Teleportation Tutorial](https://www.youtube.com/watch?v=mMwovHK2NrE)
+    * [IBM Quantum Lab](https://quantum-computing.ibm.com/) (for running Python/Qiskit online)
+
+* **Web Development: Backend (Flask)**
+    * [Flask Documentation: A Minimal Application](https://flask.palletsprojects.com/en/3.0.x/quickstart/#a-minimal-application)
+    * [Deploying Flask Apps on Render](https://render.com/docs/deploy-flask)
+
+* **Web Development: Frontend (HTML/React)**
+    * [HTML Fetch API Documentation (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+    * [React Docs: Fetching Data](https://react.dev/learn/synchronizing-with-effects#fetching-data)
