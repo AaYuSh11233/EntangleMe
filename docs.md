@@ -21,7 +21,7 @@ We made this during a hackathon to show how quantum teleportation can be turned 
 ## 🔧 How We Built It (Step-by-Step)
 
 1.  **Ran the Quantum Teleportation Code**
-    * We started with this [Qiskit notebook](https://qiskit.org/textbook/ch-algorithms/teleportation.html).
+    * We started with this [Qiskit notebook](https://github.com/qiskit-community/qiskit-community-tutorials/blob/master/Coding_With_Qiskit/ep5_Quantum_Teleportation.ipynb).
     * Ran it on **IBM Quantum Lab**.
     * Understood how entanglement, encoding, Bell measurement, classical bits, and correction gates work.
     * Tried changing input qubit states manually ($|0\rangle$, $|1\rangle$) to see the output.
