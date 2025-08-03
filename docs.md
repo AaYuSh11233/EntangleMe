@@ -66,6 +66,19 @@ We made this during a hackathon to show how quantum teleportation can be turned 
     * Works from any device—no setup needed!
 
 ---
+## ⚛️ We Also Used: Classiq to Auto-Generate Teleportation Circuits
+
+To simplify or scale the quantum backend, we explored using **Classiq**, a high-level quantum algorithm synthesis platform. Instead of building the quantum circuit manually, Classiq lets us define **intent**, and it builds the optimized circuit for us.
+
+### 🔄 Why Use Classiq?
+
+| Without Classiq          | With Classiq                             |
+|--------------------------|------------------------------------------|
+| Manually define circuit  | Auto-generate from high-level model      |
+| Qiskit-specific          | Exportable to Qiskit or other platforms  |
+| Static input             | Easily support arbitrary qubit states    |
+
+
 
 ## 🧪 Real-World Application
 
@@ -80,6 +93,11 @@ This is the exact foundation of real quantum communication systems and quantum i
 * **Qiskit & Quantum Computing**
     * [Qiskit Teleportation Tutorial](https://www.youtube.com/watch?v=mMwovHK2NrE)
     * [IBM Quantum Lab](https://quantum-computing.ibm.com/) (for running Python/Qiskit online)
+ 
+* **Classiq (Circuit Generation)**
+    * [Classiq Docs](https://docs.classiq.io/)
+    * [Classiq Platform](https://platform.classiq.io/)
+    * [Classiq API Key Setup](https://docs.classiq.io/docs/quick-start/authentication)
 
 * **Web Development: Backend (Flask)**
     * [Flask Documentation: A Minimal Application](https://flask.palletsprojects.com/en/3.0.x/quickstart/#a-minimal-application)
