@@ -1,0 +1,1 @@
+DEFAULT_RESULT_NAME = "result"

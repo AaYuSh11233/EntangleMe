@@ -1,0 +1,82 @@
+Metadata-Version: 2.3
+Name: classiq
+Version: 0.87.0
+Summary: Classiq's Python SDK for quantum computing
+License: Proprietary
+Keywords: quantum computing,quantum circuits,quantum algorithms,QAD,QDL
+Author: Classiq Technologies
+Author-email: support@classiq.io
+Requires-Python: >=3.9, <3.13
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: Other/Proprietary License
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: Other/Proprietary License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Code Generators
+Classifier: Topic :: Software Development :: Compilers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Typing :: Typed
+Provides-Extra: analyzer-sdk
+Provides-Extra: chemistry
+Provides-Extra: qml
+Requires-Dist: ConfigArgParse (>=1.5.3,<2.0.0)
+Requires-Dist: Pyomo (>=6.9,<6.10)
+Requires-Dist: black (>=24.0,<25.0)
+Requires-Dist: httpx (>=0.23.0,<1)
+Requires-Dist: ipywidgets ; extra == "analyzer-sdk"
+Requires-Dist: jupyterlab ; extra == "analyzer-sdk"
+Requires-Dist: keyring (>=23.5.0,<24.0.0)
+Requires-Dist: matplotlib (>=3.4.3,<4.0.0)
+Requires-Dist: networkx (>=3.2.0,<4.0.0)
+Requires-Dist: notebook ; extra == "analyzer-sdk"
+Requires-Dist: numexpr (>=2.7.3,<3.0.0)
+Requires-Dist: numpy (>=1.20.1,<2.0.0) ; python_version < "3.12"
+Requires-Dist: numpy (>=1.26.0,<2.0.0) ; python_version >= "3.12"
+Requires-Dist: openfermion ; extra == "chemistry"
+Requires-Dist: openfermionpyscf ; extra == "chemistry"
+Requires-Dist: packaging (>=23.2,<24.0)
+Requires-Dist: pandas (>=1.4.0,<3.0.0)
+Requires-Dist: plotly (>=5.7.0,<6.0.0)
+Requires-Dist: pydantic (>=2.9.0,<2.10.0)
+Requires-Dist: pydantic-settings (>=2.4.0,<3.0.0)
+Requires-Dist: scipy (>=1.10.0,<2.0.0) ; python_version < "3.12"
+Requires-Dist: scipy (>=1.11.0,<2.0.0) ; python_version >= "3.12"
+Requires-Dist: sympy (>=1.13.0,<2.0.0)
+Requires-Dist: tabulate (>=0.8.9,<1)
+Requires-Dist: torch ; extra == "qml"
+Requires-Dist: torchvision ; extra == "qml"
+Requires-Dist: tqdm (>=4.67.1,<5.0.0)
+Requires-Dist: zstandard (>=0.23.0,<0.24.0)
+Description-Content-Type: text/markdown
+
+<p align="center">
+  <a href="https://www.classiq.io">
+    <img src="https://uploads-ssl.webflow.com/60000db7a5f449af5e4590ac/6122b22eea7a9583a5c0d560_classiq_RGB_Green_with_margin.png" alt="Classiq">
+  </a>
+</p>
+<p align="center">
+    <em>The Classiq Quantum Algorithm Design platform helps teams build sophisticated quantum circuits that could not be designed otherwise</em>
+</p>
+
+Classiq does this by synthesizing high-level functional models into optimized quantum
+circuits, taking into account the constraints that are important to the designer.
+Furthermore, Classiq is able to generate circuits for practically any universal gate-based
+quantum computer and is compatible with most quantum cloud providers.
+
+For information about Classiq's SDK, see the
+[documentation](https://docs.classiq.io/latest/getting-started/python-sdk/).
+
+## License
+
+See [license](https://classiq.io/license).
+
