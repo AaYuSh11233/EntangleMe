@@ -3,10 +3,15 @@ from flask_cors import CORS
 from .routes import main as main_blueprint
 import logging
 import os
+import sys
+
+# Add parent directory to path for config import
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import Config
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object("config.Config")
+    app.config.from_object(Config)
     
     # Enable CORS if configured
     if app.config.get('ENABLE_CORS', True):

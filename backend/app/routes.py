@@ -4,18 +4,6 @@ import logging
 import os
 from datetime import datetime
 
-# Configure logging
-if not os.path.exists('logs'):
-    os.makedirs('logs')
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('logs/quantum_messaging.log'),
-        logging.StreamHandler()
-    ]
-)
 logger = logging.getLogger(__name__)
 
 main = Blueprint("main", __name__)
@@ -23,22 +11,41 @@ main = Blueprint("main", __name__)
 @main.route("/teleport", methods=["POST"])
 def teleport():
     """Legacy endpoint for 0/1 teleportation"""
-    data = request.json
-    input_state = data.get("state", "0")
-    result = teleport_text_message(input_state)
-    return jsonify(result)
+    try:
+        data = request.json
+        if not data:
+            return jsonify({"error": "No JSON data provided"}), 400
+            
+        input_state = data.get("state", "0")
+        
+        # Validate input state
+        if input_state not in ["0", "1"]:
+            return jsonify({"error": "State must be '0' or '1'"}), 400
+            
+        result = teleport_text_message(input_state)
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error in teleport: {str(e)}")
+        return jsonify({"error": "Teleportation failed"}), 500
 
 @main.route("/send-message", methods=["POST"])
 def send_message():
     """Send a text message using quantum teleportation"""
     try:
         data = request.json
+        if not data:
+            return jsonify({"error": "No JSON data provided"}), 400
+            
         message = data.get("message", "")
         sender = data.get("sender", "User A")
         receiver = data.get("receiver", "User B")
         
         if not message:
             return jsonify({"error": "Message cannot be empty"}), 400
+        
+        if len(message) > 1000:  # Use config value
+            return jsonify({"error": "Message too long"}), 400
         
         # Log the message being sent (for demonstration - in real quantum messaging this wouldn't be stored)
         logger.info(f"QUANTUM MESSAGE SENT - Sender: {sender}, Receiver: {receiver}, Message: '{message}'")
@@ -58,9 +65,12 @@ def send_message():
             "note": "Message was teleported, not stored in any database"
         })
         
+    except ValueError as e:
+        logger.error(f"Validation error in send_message: {str(e)}")
+        return jsonify({"error": "Invalid input data"}), 400
     except Exception as e:
-        logger.error(f"Error in send_message: {str(e)}")
-        return jsonify({"error": "Failed to send message"}), 500
+        logger.error(f"Unexpected error in send_message: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
 
 @main.route("/receive-message", methods=["POST"])
 def receive_message():
