@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from .routes import main as main_blueprint
 import logging
 import os
@@ -12,6 +14,13 @@ from config import Config
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    
+    # Initialize rate limiter
+    limiter = Limiter(
+        app=app,
+        key_func=get_remote_address,
+        default_limits=["200 per day", "50 per hour"]
+    )
     
     # Enable CORS if configured
     if app.config.get('ENABLE_CORS', True):
@@ -41,5 +50,9 @@ def create_app():
     @app.errorhandler(500)
     def internal_error(error):
         return {"error": "Quantum entanglement failed", "message": "Internal server error"}, 500
+    
+    @app.errorhandler(429)
+    def ratelimit_handler(error):
+        return {"error": "Rate limit exceeded", "message": "Too many requests, please try again later"}, 429
     
     return app

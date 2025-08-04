@@ -1,14 +1,41 @@
 from flask import Blueprint, request, jsonify
+from flask_limiter import limiter
 from app.quantum.teleport import teleport_text_message
 import logging
 import os
+import re
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
 main = Blueprint("main", __name__)
 
+def sanitize_input(text: str, max_length: int = 1000) -> str:
+    """Sanitize user input to prevent injection attacks"""
+    if not text:
+        return ""
+    
+    # Remove potentially dangerous characters
+    sanitized = re.sub(r'[<>"\']', '', text)
+    
+    # Limit length
+    if len(sanitized) > max_length:
+        sanitized = sanitized[:max_length]
+    
+    return sanitized.strip()
+
+@main.route("/health", methods=["GET"])
+def health_check():
+    """Health check endpoint for monitoring"""
+    return jsonify({
+        "status": "healthy",
+        "service": "EntangleMe Quantum Messaging",
+        "timestamp": datetime.now().isoformat(),
+        "version": "1.0.0"
+    })
+
 @main.route("/teleport", methods=["POST"])
+@limiter.limit("30 per minute")
 def teleport():
     """Legacy endpoint for 0/1 teleportation"""
     try:
@@ -30,6 +57,7 @@ def teleport():
         return jsonify({"error": "Teleportation failed"}), 500
 
 @main.route("/send-message", methods=["POST"])
+@limiter.limit("20 per minute")
 def send_message():
     """Send a text message using quantum teleportation"""
     try:
@@ -37,9 +65,10 @@ def send_message():
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
             
-        message = data.get("message", "")
-        sender = data.get("sender", "User A")
-        receiver = data.get("receiver", "User B")
+        # Sanitize all inputs
+        message = sanitize_input(data.get("message", ""))
+        sender = sanitize_input(data.get("sender", "User A"), 50)
+        receiver = sanitize_input(data.get("receiver", "User B"), 50)
         
         if not message:
             return jsonify({"error": "Message cannot be empty"}), 400
@@ -47,9 +76,9 @@ def send_message():
         if len(message) > 1000:  # Use config value
             return jsonify({"error": "Message too long"}), 400
         
-        # Log the message being sent (for demonstration - in real quantum messaging this wouldn't be stored)
-        logger.info(f"QUANTUM MESSAGE SENT - Sender: {sender}, Receiver: {receiver}, Message: '{message}'")
-        logger.info("NOTE: This message is NOT stored in any database - it's only teleported!")
+        # SECURE LOGGING - Only log metadata, not content
+        logger.info(f"QUANTUM MESSAGE SENT - Sender: {sender}, Receiver: {receiver}, Length: {len(message)} chars")
+        logger.info("SECURITY: Message content NOT logged - only teleported!")
         
         # Convert text to binary and teleport each bit
         teleportation_results = teleport_text_message(message)
@@ -59,10 +88,10 @@ def send_message():
             "message": "Message teleported successfully",
             "sender": sender,
             "receiver": receiver,
-            "original_message": message,
+            "message_length": len(message),
             "teleportation_data": teleportation_results,
             "timestamp": datetime.now().isoformat(),
-            "note": "Message was teleported, not stored in any database"
+            "security_note": "Message content not stored or logged - only teleported"
         })
         
     except ValueError as e:
@@ -73,26 +102,32 @@ def send_message():
         return jsonify({"error": "Internal server error"}), 500
 
 @main.route("/receive-message", methods=["POST"])
+@limiter.limit("30 per minute")
 def receive_message():
     """Receive a teleported message"""
     try:
         data = request.json
+        if not data:
+            return jsonify({"error": "No JSON data provided"}), 400
+            
         teleportation_data = data.get("teleportation_data", {})
-        receiver = data.get("receiver", "User B")
+        receiver = sanitize_input(data.get("receiver", "User B"), 50)
         
         # Reconstruct message from teleportation data
         reconstructed_message = teleportation_data.get("reconstructed_message", "")
         
-        logger.info(f"QUANTUM MESSAGE RECEIVED - Receiver: {receiver}, Message: '{reconstructed_message}'")
-        logger.info("NOTE: This message was reconstructed from quantum teleportation, not retrieved from storage!")
+        # SECURE LOGGING - Only log metadata
+        logger.info(f"QUANTUM MESSAGE RECEIVED - Receiver: {receiver}, Length: {len(reconstructed_message)} chars")
+        logger.info("SECURITY: Message content NOT logged - only reconstructed from teleportation!")
         
         return jsonify({
             "status": "success",
             "message": "Message received via quantum teleportation",
             "receiver": receiver,
-            "received_message": reconstructed_message,
+            "received_message": reconstructed_message,  # Only returned to receiver
+            "message_length": len(reconstructed_message),
             "timestamp": datetime.now().isoformat(),
-            "note": "Message was received via quantum teleportation, not from any database"
+            "security_note": "Message reconstructed from quantum teleportation, not from storage"
         })
         
     except Exception as e:
@@ -100,15 +135,16 @@ def receive_message():
         return jsonify({"error": "Failed to receive message"}), 500
 
 @main.route("/logs", methods=["GET"])
+@limiter.limit("10 per minute")
 def get_logs():
-    """Get recent logs to show what's being stored vs teleported"""
+    """Get recent logs to show what's being recorded vs teleported"""
     try:
         with open('logs/quantum_messaging.log', 'r') as f:
             recent_logs = f.readlines()[-50:]  # Last 50 lines
         
         return jsonify({
             "logs": recent_logs,
-            "note": "These logs show what's being recorded for demonstration purposes. In real quantum messaging, even these logs wouldn't exist."
+            "security_note": "Logs contain only metadata (length) - NO message content is logged for security"
         })
     except FileNotFoundError:
-        return jsonify({"logs": [], "note": "No logs found"})
+        return jsonify({"logs": [], "security_note": "No logs found"})

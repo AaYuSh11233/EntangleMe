@@ -19,6 +19,17 @@ class TestQuantumMessagingIntegration(unittest.TestCase):
         self.app.config['TESTING'] = True
         self.client = self.app.test_client()
     
+    def test_health_check_endpoint(self):
+        """Test the health check endpoint"""
+        response = self.client.get('/health')
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        
+        self.assertEqual(data['status'], 'healthy')
+        self.assertEqual(data['service'], 'EntangleMe Quantum Messaging')
+        self.assertIn('timestamp', data)
+        self.assertIn('version', data)
+    
     def test_send_message_endpoint(self):
         """Test the send-message endpoint"""
         test_data = {
@@ -37,9 +48,12 @@ class TestQuantumMessagingIntegration(unittest.TestCase):
         self.assertEqual(data['status'], 'success')
         self.assertEqual(data['sender'], 'Alice')
         self.assertEqual(data['receiver'], 'Bob')
-        self.assertEqual(data['original_message'], 'Hello, Quantum World!')
+        self.assertEqual(data['message_length'], 19)
         self.assertIn('teleportation_data', data)
         self.assertIn('timestamp', data)
+        self.assertIn('security_note', data)
+        # Verify original message is NOT returned for security
+        self.assertNotIn('original_message', data)
     
     def test_send_message_empty(self):
         """Test sending empty message"""
@@ -61,6 +75,25 @@ class TestQuantumMessagingIntegration(unittest.TestCase):
         """Test sending request without JSON data"""
         response = self.client.post('/send-message')
         self.assertEqual(response.status_code, 400)
+    
+    def test_input_sanitization(self):
+        """Test input sanitization"""
+        test_data = {
+            "sender": "Alice<script>alert('xss')</script>",
+            "receiver": "Bob",
+            "message": "Hello<script>alert('xss')</script>"
+        }
+        
+        response = self.client.post('/send-message', 
+                                  data=json.dumps(test_data),
+                                  content_type='application/json')
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        
+        # Verify XSS attempts are sanitized
+        self.assertEqual(data['sender'], 'Alice')
+        self.assertEqual(data['message_length'], 5)  # "Hello" only
     
     def test_receive_message_endpoint(self):
         """Test the receive-message endpoint"""
@@ -92,6 +125,8 @@ class TestQuantumMessagingIntegration(unittest.TestCase):
         self.assertEqual(receive_result['status'], 'success')
         self.assertEqual(receive_result['receiver'], 'Bob')
         self.assertEqual(receive_result['received_message'], 'Test message')
+        self.assertEqual(receive_result['message_length'], 12)
+        self.assertIn('security_note', receive_result)
     
     def test_legacy_teleport_endpoint(self):
         """Test the legacy teleport endpoint"""
@@ -111,7 +146,7 @@ class TestQuantumMessagingIntegration(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.get_json()
         self.assertIn('logs', data)
-        self.assertIn('note', data)
+        self.assertIn('security_note', data)
     
     def test_404_error(self):
         """Test 404 error handling"""
