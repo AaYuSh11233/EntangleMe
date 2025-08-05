@@ -1,29 +1,39 @@
-from app import create_app
-import logging
+"""
+Main entry point for the Quantum Teleportation Chat application.
+This file serves as the primary way to run the application.
+"""
+
 import os
+import sys
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+# Add the parent directory to the path so we can import the backend package
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-app = create_app()
+from backend.app import create_app
 
-if __name__ == "__main__":
-    logger.info("🚀 Starting EntangleMe Quantum Messaging Server")
-    logger.info("📡 Server will be available at http://localhost:5000")
-    logger.info("🔐 Quantum teleportation endpoints:")
-    logger.info("   GET  /health - Health check and monitoring")
-    logger.info("   POST /teleport - Legacy 0/1 teleportation (30/min)")
-    logger.info("   POST /send-message - Send text messages via quantum teleportation (20/min)")
-    logger.info("   POST /receive-message - Receive teleported messages (30/min)")
-    logger.info("   GET  /logs - View quantum messaging logs (10/min)")
-    logger.info("🔒 Security features: Input sanitization, rate limiting, secure logging")
+def main():
+    """Main function to run the application."""
+    # Get configuration from environment
+    config_name = os.environ.get('FLASK_ENV', 'development')
     
-    try:
-        app.run(debug=True, host="0.0.0.0", port=5000)
-    except Exception as e:
-        logger.error(f"Failed to start server: {e}")
-        exit(1)
+    # Create and run the application
+    app = create_app(config_name)
+    
+    print("🚀 Starting Quantum Teleportation Chat Server...")
+    print("🔬 Qubit Teleportation Mode: Send 0 or 1 qubits")
+    print(f"🌍 Environment: {config_name}")
+    print(f"📍 Host: {app.config['HOST']}")
+    print(f"🔌 Port: {app.config['PORT']}")
+    print(f"🐛 Debug: {app.config['DEBUG']}")
+    print(f"📚 API Documentation: http://{app.config['HOST']}:{app.config['PORT']}/api")
+    print(f"❤️ Health Check: http://{app.config['HOST']}:{app.config['PORT']}/health")
+    print("=" * 60)
+    
+    app.run(
+        debug=app.config['DEBUG'],
+        host=app.config['HOST'],
+        port=app.config['PORT']
+    )
+
+if __name__ == '__main__':
+    main() 
