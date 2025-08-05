@@ -5,6 +5,8 @@
 .env.test
 .env.production
 
+
+node_modules/
 # Python
 __pycache__/
 *.py[cod]
