@@ -1,7 +1,7 @@
 # EntangleMe 🌀  
 > A messaging app using **Quantum Teleportation**
 
-We built **Entangleme** to explore how quantum teleportation could work as a message transfer system. It uses **Qiskit** to simulate teleporting qubit states and connects it to a simple web interface—where one user sends a bit and the other receives it.
+We built **EntangleMe** to explore how quantum teleportation could work as a message transfer system. It uses **Qiskit** to simulate teleporting qubit states and connects it to a simple web interface—where one user sends a bit and the other receives it.
 
 ---
 
