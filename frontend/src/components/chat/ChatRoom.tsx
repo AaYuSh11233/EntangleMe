@@ -3,6 +3,8 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Button } from '../ui/button';
 import { Message } from '@/types/chat';
 import { api } from '@/api/client';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface ChatRoomProps {
   messages: Message[];
@@ -32,27 +34,46 @@ export function ChatRoom({ messages, currentUser, isWaiting, onLeave }: ChatRoom
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
       <Card className="flex-1 flex flex-col bg-zinc-900 border-zinc-800">
-        <div className="p-4 border-b border-zinc-800">
+        <div className="p-4 border-b border-zinc-800 bg-gradient-to-r from-zinc-900 to-zinc-800">
           <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-xl font-semibold text-white">Room: Entangle Room</h2>
-              <p className="text-sm text-zinc-400">
-                Logged in as: {currentUser}
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center backdrop-blur-sm">
+                🌀
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  Entangle Room
+                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+                    {isWaiting ? 'Waiting' : 'Connected'}
+                  </span>
+                </h2>
+                <p className="text-sm text-zinc-400">
+                  Logged in as <span className="text-blue-400">{currentUser}</span>
+                </p>
+              </div>
             </div>
             <Button 
-              variant="destructive" 
+              variant="ghost"
               onClick={handleLeave}
-              className="bg-red-600 hover:bg-red-700"
+              className="text-zinc-400 hover:text-red-400 hover:bg-red-500/10"
             >
-              Leave Room
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Leave Room
+              </motion.div>
             </Button>
           </div>
         </div>
 
         <ScrollArea className="flex-1 p-4">
           {isWaiting ? (
-            <div className="flex flex-col items-center justify-center h-full space-y-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center justify-center h-full space-y-4"
+            >
               <div className="text-xl font-semibold text-zinc-400">
                 Waiting for another user to join...
               </div>
@@ -62,44 +83,84 @@ export function ChatRoom({ messages, currentUser, isWaiting, onLeave }: ChatRoom
               <div className="font-mono text-sm text-blue-400 bg-zinc-800 px-4 py-2 rounded">
                 {window.location.href}
               </div>
-            </div>
+            </motion.div>
           ) : (
-            <div className="space-y-4">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex gap-2 text-sm ${
-                    message.sender === currentUser
-                      ? "text-blue-400"
-                      : "text-green-400"
-                  }`}
-                >
-                  <span>▸</span>
-                  <span>
-                    {message.sender} {message.sender === currentUser ? "sent" : "received"} {message.bit}{" "}
-                    <span className="text-zinc-500">({message.timestamp})</span>
-                  </span>
-                </div>
-              ))}
+            <div className="space-y-4 py-4">
+              <AnimatePresence>
+                {messages.map((message, index) => {
+                  const isCurrentUser = message.sender === currentUser;
+                  return (
+                    <motion.div
+                      key={`${message.sender}-${message.timestamp}-${index}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className={cn(
+                        "flex w-full mb-4",
+                        isCurrentUser ? "justify-end" : "justify-start"
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "flex flex-col max-w-[80%] rounded-lg px-4 py-2",
+                          isCurrentUser
+                            ? "bg-blue-600 text-white items-end rounded-br-none"
+                            : "bg-zinc-800 text-white items-start rounded-bl-none"
+                        )}
+                      >
+                        <div className="text-sm font-medium mb-1">
+                          {isCurrentUser ? "You" : message.sender}
+                        </div>
+                        <div className="text-lg font-semibold mb-1">
+                          {message.bit}
+                        </div>
+                        <div className="text-xs text-zinc-300/80">
+                          {message.timestamp}
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
             </div>
           )}
         </ScrollArea>
 
-        <div className="p-4 border-t border-zinc-800 flex gap-4">
-          <Button 
-            className="flex-1 bg-blue-600 hover:bg-blue-700" 
-            onClick={() => handleSendBit(0)}
-            disabled={isWaiting}
-          >
-            Send 0
-          </Button>
-          <Button 
-            className="flex-1 bg-blue-600 hover:bg-blue-700" 
-            onClick={() => handleSendBit(1)}
-            disabled={isWaiting}
-          >
-            Send 1
-          </Button>
+        <div className="p-4 border-t border-zinc-800">
+          <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+            <Button 
+              className={cn(
+                "h-16 text-lg font-semibold transition-all duration-200",
+                "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600",
+                "disabled:from-zinc-700 disabled:to-zinc-800 disabled:opacity-50"
+              )}
+              onClick={() => handleSendBit(0)}
+              disabled={isWaiting}
+            >
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Send 0
+              </motion.div>
+            </Button>
+            <Button 
+              className={cn(
+                "h-16 text-lg font-semibold transition-all duration-200",
+                "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600",
+                "disabled:from-zinc-700 disabled:to-zinc-800 disabled:opacity-50"
+              )}
+              onClick={() => handleSendBit(1)}
+              disabled={isWaiting}
+            >
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Send 1
+              </motion.div>
+            </Button>
+          </div>
         </div>
       </Card>
     </div>

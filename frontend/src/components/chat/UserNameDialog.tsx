@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
@@ -62,6 +62,9 @@ export function UserNameDialog({ isOpen, onClose, onGetStarted }: UserNameDialog
       <DialogContent className="sm:max-w-[425px] bg-zinc-900 border-zinc-800">
         <DialogHeader>
           <DialogTitle className="text-lg text-white">Welcome to EntangleMe</DialogTitle>
+          <DialogDescription className="text-zinc-400">
+            Enter your name to join the quantum chat experience. Names must be unique and at least 3 characters long.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div className="space-y-2">
@@ -73,6 +76,7 @@ export function UserNameDialog({ isOpen, onClose, onGetStarted }: UserNameDialog
               className="w-full bg-zinc-800 border-zinc-700 text-white"
               disabled={isLoading}
               autoFocus
+              aria-label="Username input"
             />
           </div>
           <Button 

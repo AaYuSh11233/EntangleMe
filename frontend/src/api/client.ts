@@ -20,30 +20,8 @@ export class MockStorage {
       console.error('Error loading saved state:', error);
     }
 
-    // Listen for broadcast messages
-    this.channel.onmessage = (event) => {
-      const { type, data } = event.data;
-      switch (type) {
-        case 'ADD_USER':
-          this.users.add(data);
-          window.dispatchEvent(new CustomEvent('roomUpdate'));
-          break;
-        case 'REMOVE_USER':
-          this.users.delete(data);
-          window.dispatchEvent(new CustomEvent('roomUpdate'));
-          break;
-        case 'NEW_MESSAGE':
-          this.messages.push(data);
-          window.dispatchEvent(new CustomEvent('messageUpdate'));
-          break;
-        case 'CLEAR':
-          this.users.clear();
-          this.messages = [];
-          window.dispatchEvent(new CustomEvent('roomUpdate'));
-          window.dispatchEvent(new CustomEvent('messageUpdate'));
-          break;
-      }
-    };
+    // Set up channel listener
+    this.setupChannelListener();
   }
   
   private static saveState() {
@@ -86,22 +64,24 @@ export class MockStorage {
     return Array.from(this.users).find(u => u !== currentUser);
   }
   
-  static clearAll() {
-    this.users.clear();
-    this.messages = [];
-    localStorage.removeItem(this.STORAGE_KEY);
-    this.channel.postMessage({ type: 'CLEAR' });
-  }
-
-  // Cleanup on page unload
-  static {
-    window.addEventListener('unload', () => {
-      // Only clear user data for the current tab
-      const currentUser = Array.from(this.users).pop();
-      if (currentUser) {
-        this.removeUser(currentUser);
+  private static setupChannelListener() {
+    this.channel.onmessage = (event) => {
+      const { type, data } = event.data;
+      switch (type) {
+        case 'ADD_USER':
+          this.users.add(data);
+          window.dispatchEvent(new CustomEvent('roomUpdate'));
+          break;
+        case 'REMOVE_USER':
+          this.users.delete(data);
+          window.dispatchEvent(new CustomEvent('roomUpdate'));
+          break;
+        case 'NEW_MESSAGE':
+          this.messages.push(data);
+          window.dispatchEvent(new CustomEvent('messageUpdate'));
+          break;
       }
-    });
+    };
   }
 }
 
