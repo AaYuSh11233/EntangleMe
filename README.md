@@ -12,6 +12,7 @@ We built **EntangleMe** to explore how quantum teleportation could work as a mes
 ![Classiq](https://img.shields.io/badge/Classiq-3B3C36?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyBmaWxsPSJ3aGl0ZSIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIGZpbGw9ImJsYWNrIiByeD0iMjUiLz48dGV4dCB4PSIxMjgiIHk9IjI4MCIgZm9udC1zaXplPSIyMDAiIGZpbGw9IndoaXRlIj5DQTwvdGV4dD48L3N2Zz4=)
 ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
@@ -42,6 +43,15 @@ As quantum repeaters and entanglement distribution networks become available, En
 5. **Deployment:** Backend on **Render**, frontend on **Vercel**—works anywhere!
 
 ---
+## 🧠 Core Concept
+
+We followed actual quantum teleportation principles:
+> Entangle → Encode → Measure → Send Classical Bits → Apply Corrections
+
+This is the same foundation used in **quantum internet** and **secure quantum communication**.
+
+---
+
 ## ⚛️ We Also Used: Classiq to Auto-Generate Teleportation Circuits
 
 To simplify or scale the quantum backend, we explored using **Classiq**, a high-level quantum algorithm synthesis platform. Instead of building the quantum circuit manually, Classiq lets us define **intent**, and it builds the optimized circuit for us.
@@ -62,18 +72,9 @@ To simplify or scale the quantum backend, we explored using **Classiq**, a high-
 
 | Role        | Name         | GitHub / Profile Link |
 |-------------|--------------|------------------------|
-| 🧠 Lead     | Md Athar Jamal Makki  | [@atharhive]       |
-| 🎨 Frontend | Akshad Jogi  | [@akshad-exe]     |
-| 🛠 Backend  | Ayush Sarkar  | [@dev-Ninjaa]      |
-
----
-
-## 🧠 Core Concept
-
-We followed actual quantum teleportation principles:
-> Entangle → Encode → Measure → Send Classical Bits → Apply Corrections
-
-This is the same foundation used in **quantum internet** and **secure quantum communication**.
+| 🧠 Lead     | Md Athar Jamal Makki  | [@atharhive](https://github.com/atharhive)       |
+| 🎨 Frontend | Akshad Jogi  | [@akshad-exe](https://github.com/akshad-exe)     |
+| 🛠 Backend  | Ayush Sarkar  | [@dev-Ninjaa](https://github.com/dev-Ninjaa)      |
 
 ---
 
