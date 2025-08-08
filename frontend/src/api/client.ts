@@ -1,65 +1,140 @@
-import { QubitState, TeleportationResult } from '../types/quantum';
-import { Room, Message } from '../types/chat';
+import { JoinResponse, Message, SendBitResponse } from '../types/chat';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// Simulated storage using localStorage
+class MockStorage {
+  private static USERS_KEY = 'entangleme_users';
+  private static MESSAGES_KEY = 'entangleme_messages';
+  
+  private static getStoredUsers(): string[] {
+    const stored = localStorage.getItem(this.USERS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  }
+  
+  private static getStoredMessages(): Message[] {
+    const stored = localStorage.getItem(this.MESSAGES_KEY);
+    return stored ? JSON.parse(stored) : [];
+  }
+  
+  static addMessage(message: Message) {
+    const messages = this.getStoredMessages();
+    messages.push(message);
+    localStorage.setItem(this.MESSAGES_KEY, JSON.stringify(messages));
+  }
+  
+  static getMessages(): Message[] {
+    return this.getStoredMessages();
+  }
+  
+  static addUser(username: string) {
+    const users = this.getStoredUsers();
+    if (!users.includes(username)) {
+      users.push(username);
+      localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+    }
+  }
+  
+  static removeUser(username: string) {
+    const users = this.getStoredUsers().filter(u => u !== username);
+    localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+  }
+  
+  static getUserCount() {
+    return this.getStoredUsers().length;
+  }
+  
+  static getFirstUser() {
+    return this.getStoredUsers()[0];
+  }
+  
+  static getOtherUser(currentUser: string) {
+    return this.getStoredUsers().find(u => u !== currentUser);
+  }
+  
+  static clearAll() {
+    localStorage.removeItem(this.MESSAGES_KEY);
+    localStorage.removeItem(this.USERS_KEY);
+  }
+  
+  // Added for real-time updates
+  static onStorageChange(callback: () => void) {
+    window.addEventListener('storage', callback);
+    return () => window.removeEventListener('storage', callback);
+  }
+}
 
 class ApiClient {
-  private baseUrl: string;
+  private storageListener?: () => void;
+  private currentUsername?: string;
 
-  constructor(baseUrl: string = API_BASE_URL) {
-    this.baseUrl = baseUrl;
+  // User Operations
+  async joinRoom(username: string): Promise<JoinResponse> {
+    this.currentUsername = username;
+    MockStorage.addUser(username);
+    const userCount = MockStorage.getUserCount();
+    const otherUser = MockStorage.getOtherUser(username);
+    
+    return {
+      status: userCount === 2 ? 'ready' : 'waiting',
+      other_user: otherUser
+    };
   }
 
-  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`);
+  async leaveRoom(): Promise<void> {
+    if (this.currentUsername) {
+      MockStorage.removeUser(this.currentUsername);
+      this.currentUsername = undefined;
     }
-
-    return response.json();
-  }
-
-  // Quantum Operations
-  async teleport(state: QubitState): Promise<TeleportationResult> {
-    return this.request<TeleportationResult>('/teleport', {
-      method: 'POST',
-      body: JSON.stringify({ state }),
-    });
-  }
-
-  // Room Operations
-  async getRooms(): Promise<Room[]> {
-    return this.request<Room[]>('/rooms');
-  }
-
-  async createRoom(name: string): Promise<Room> {
-    return this.request<Room>('/rooms/create', {
-      method: 'POST',
-      body: JSON.stringify({ name }),
-    });
-  }
-
-  async getRoom(roomId: string): Promise<Room> {
-    return this.request<Room>(`/rooms/${roomId}`);
   }
 
   // Message Operations
-  async getRoomMessages(roomId: string): Promise<Message[]> {
-    return this.request<Message[]>(`/rooms/${roomId}/messages`);
+  async sendBit(username: string, bit: 0 | 1): Promise<SendBitResponse> {
+    const message: Message = {
+      sender: username,
+      bit: bit,
+      timestamp: new Date().toLocaleTimeString()
+    };
+    
+    MockStorage.addMessage(message);
+    return { success: true };
   }
 
-  async sendMessage(roomId: string, message: Omit<Message, 'id' | 'status'>): Promise<Message> {
-    return this.request<Message>(`/rooms/${roomId}/messages`, {
-      method: 'POST',
-      body: JSON.stringify(message),
-    });
+  async getMessages(): Promise<Message[]> {
+    return MockStorage.getMessages();
+  }
+
+  // Real-time updates using storage events
+  startPolling(onMessages: (messages: Message[]) => void) {
+    // Initial messages
+    onMessages(MockStorage.getMessages());
+    
+    // Set up storage event listener for real-time updates
+    this.storageListener = () => {
+      onMessages(MockStorage.getMessages());
+      
+      // Check if user count has changed
+      if (this.currentUsername) {
+        const userCount = MockStorage.getUserCount();
+        const otherUser = MockStorage.getOtherUser(this.currentUsername);
+        
+        // Dispatch a custom event when room status changes
+        window.dispatchEvent(new CustomEvent('roomStatusChange', {
+          detail: {
+            status: userCount === 2 ? 'ready' : 'waiting',
+            other_user: otherUser
+          }
+        }));
+      }
+    };
+    
+    // Add the storage event listener
+    window.addEventListener('storage', this.storageListener);
+  }
+
+  stopPolling() {
+    if (this.storageListener) {
+      window.removeEventListener('storage', this.storageListener);
+      this.storageListener = undefined;
+    }
   }
 }
 

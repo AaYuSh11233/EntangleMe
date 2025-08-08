@@ -1,22 +1,24 @@
-import { QuantumMessage } from './quantum';
-
 export interface Room {
-  id: string;
   name: string;
-  participants: string[];
-  createdAt: number;
-  lastActivity: number;
+  users: string[];
+  status: 'waiting' | 'ready';
 }
 
-export interface Message extends QuantumMessage {
-  id: string;
-  roomId: string;
-  status: 'sending' | 'sent' | 'failed' | 'teleported';
+export interface Message {
+  sender: string;
+  bit: 0 | 1;
+  timestamp: string;
+}
+
+export interface JoinResponse {
+  status: 'waiting' | 'ready';
+  other_user?: string;
+}
+
+export interface SendBitResponse {
+  success: boolean;
 }
 
 export interface User {
-  id: string;
-  name: string;
-  isOnline: boolean;
-  lastSeen?: number;
+  username: string;
 } 

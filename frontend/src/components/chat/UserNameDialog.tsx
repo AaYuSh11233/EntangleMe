@@ -7,21 +7,30 @@ import { toast } from "sonner";
 interface UserNameDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (username: string) => void;
+  onGetStarted: (username: string) => void;
 }
 
-export function UserNameDialog({ isOpen, onClose, onSubmit }: UserNameDialogProps) {
+export function UserNameDialog({ isOpen, onClose, onGetStarted }: UserNameDialogProps) {
   const [username, setUsername] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (username.trim().length < 3) {
       toast.error("Username must be at least 3 characters long");
       return;
     }
-    onSubmit(username.trim());
-    setUsername(""); // Reset form
-    onClose(); // Close dialog after successful submission
+
+    setIsLoading(true);
+    try {
+      onGetStarted(username.trim());
+      setUsername("");
+      onClose();
+    } catch (error) {
+      toast.error("Failed to join the room. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -38,11 +47,16 @@ export function UserNameDialog({ isOpen, onClose, onSubmit }: UserNameDialogProp
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full bg-zinc-800 border-zinc-700 text-white"
+              disabled={isLoading}
               autoFocus
             />
           </div>
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-            Start Chatting
+          <Button 
+            type="submit" 
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+            disabled={isLoading}
+          >
+            Join Room
           </Button>
         </form>
       </DialogContent>

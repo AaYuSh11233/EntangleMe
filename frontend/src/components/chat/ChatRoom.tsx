@@ -1,85 +1,105 @@
-import { useState } from 'react';
 import { Card } from '../ui/card';
 import { ScrollArea } from '../ui/scroll-area';
-import { QuantumStateSelector } from '../quantum/QuantumStateSelector';
-import { QuantumVisualizer } from '../quantum/QuantumVisualizer';
-import { Message, Room } from '@/types/chat';
-import { TeleportationResult } from '@/types/quantum';
+import { Button } from '../ui/button';
+import { Message } from '@/types/chat';
+import { api } from '@/api/client';
 
 interface ChatRoomProps {
-  room: Room;
   messages: Message[];
   currentUser: string;
-  onNewMessage: (message: Message) => void;
+  isWaiting: boolean;
+  onLeave: () => void;
 }
 
-export function ChatRoom({ room, messages, currentUser, onNewMessage }: ChatRoomProps) {
-  const [lastTeleportation, setLastTeleportation] = useState<TeleportationResult>();
+export function ChatRoom({ messages, currentUser, isWaiting, onLeave }: ChatRoomProps) {
+  const handleSendBit = async (bit: 0 | 1) => {
+    try {
+      await api.sendBit(currentUser, bit);
+    } catch (error) {
+      console.error('Error sending bit:', error);
+    }
+  };
 
-  const handleStateSelected = (state: "0" | "1", result: TeleportationResult) => {
-    setLastTeleportation(result);
-    
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      roomId: room.id,
-      senderId: currentUser,
-      receiverId: room.participants.find(p => p !== currentUser) || "all",
-      state,
-      timestamp: Date.now(),
-      status: "teleported",
-      result,
-    };
-
-    onNewMessage(newMessage);
+  const handleLeave = async () => {
+    try {
+      await api.leaveRoom();
+      onLeave();
+    } catch (error) {
+      console.error('Error leaving room:', error);
+    }
   };
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
-      <Card className="flex-1 flex flex-col">
-        <div className="p-4 border-b">
-          <h2 className="text-xl font-semibold">{room.name}</h2>
-          <p className="text-sm text-muted-foreground">
-            {room.participants.length} participants
-          </p>
+      <Card className="flex-1 flex flex-col bg-zinc-900 border-zinc-800">
+        <div className="p-4 border-b border-zinc-800">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-semibold text-white">Room: Entangle Room</h2>
+              <p className="text-sm text-zinc-400">
+                Logged in as: {currentUser}
+              </p>
+            </div>
+            <Button 
+              variant="destructive" 
+              onClick={handleLeave}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Leave Room
+            </Button>
+          </div>
         </div>
+
         <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex flex-col space-y-1 rounded-lg p-3 ${
-                  message.senderId === currentUser
-                    ? "bg-blue-500/20 ml-auto"
-                    : "bg-muted/50"
-                } max-w-[80%]`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{message.senderId}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(message.timestamp).toLocaleTimeString()}
+          {isWaiting ? (
+            <div className="flex flex-col items-center justify-center h-full space-y-4">
+              <div className="text-xl font-semibold text-zinc-400">
+                Waiting for another user to join...
+              </div>
+              <div className="text-sm text-zinc-500">
+                Share this link with someone to join:
+              </div>
+              <div className="font-mono text-sm text-blue-400 bg-zinc-800 px-4 py-2 rounded">
+                {window.location.href}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`flex gap-2 text-sm ${
+                    message.sender === currentUser
+                      ? "text-blue-400"
+                      : "text-green-400"
+                  }`}
+                >
+                  <span>▸</span>
+                  <span>
+                    {message.sender} {message.sender === currentUser ? "sent" : "received"} {message.bit}{" "}
+                    <span className="text-zinc-500">({message.timestamp})</span>
                   </span>
                 </div>
-                <div className="font-mono">
-                  Sent state: |{message.state}⟩
-                </div>
-                {message.result && (
-                  <div className="text-sm text-muted-foreground">
-                    Classical bits: {message.result.classicalBits}
-                    <br />
-                    Received: |{message.result.receiverState}⟩
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-        <div className="p-4 border-t space-y-4">
-          <QuantumStateSelector
-            onStateSelected={handleStateSelected}
-          />
-          {lastTeleportation && (
-            <QuantumVisualizer result={lastTeleportation} />
+              ))}
+            </div>
           )}
+        </ScrollArea>
+
+        <div className="p-4 border-t border-zinc-800 flex gap-4">
+          <Button 
+            className="flex-1 bg-blue-600 hover:bg-blue-700" 
+            onClick={() => handleSendBit(0)}
+            disabled={isWaiting}
+          >
+            Send 0
+          </Button>
+          <Button 
+            className="flex-1 bg-blue-600 hover:bg-blue-700" 
+            onClick={() => handleSendBit(1)}
+            disabled={isWaiting}
+          >
+            Send 1
+          </Button>
         </div>
       </Card>
     </div>

@@ -7,18 +7,14 @@ import { Toaster } from './components/ui/sonner';
 
 function AppContent() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState<string | null>(() => {
-    return localStorage.getItem('username');
-  });
+  const [username, setUsername] = useState<string | null>(null);
 
   const handleGetStarted = (name: string) => {
-    localStorage.setItem('username', name);
     setUsername(name);
     navigate('/chat');
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('username');
     setUsername(null);
     navigate('/');
   };

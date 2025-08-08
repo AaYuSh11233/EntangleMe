@@ -240,7 +240,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
       <UserNameDialog
         isOpen={showDialog}
         onClose={() => setShowDialog(false)}
-        onSubmit={onGetStarted}
+        onGetStarted={onGetStarted}
       />
     </div>
   );

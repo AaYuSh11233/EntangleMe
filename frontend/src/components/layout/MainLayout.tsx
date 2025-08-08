@@ -1,22 +1,15 @@
 import { ReactNode } from 'react';
-import { Header } from './Header';
-import { Sidebar } from './Sidebar';
 
 interface MainLayoutProps {
   children: ReactNode;
-  onLogout: () => void;
 }
 
-export function MainLayout({ children, onLogout }: MainLayoutProps) {
+export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="min-h-screen bg-background">
-      <Header onLogout={onLogout} />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 p-6">
-          {children}
-        </main>
-      </div>
+    <div className="min-h-screen bg-zinc-950 p-6">
+      <main className="container mx-auto">
+        {children}
+      </main>
     </div>
   );
 } 
