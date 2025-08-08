@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { MainLayout } from "../layout/MainLayout";
 import { ChatRoom } from "./ChatRoom";
 import { Message } from "@/types/chat";
-import { api } from "@/api/client";
+import { api, MockStorage } from "@/api/client";
+import { toast } from "sonner";
 
 interface ChatScreenProps {
   initialUsername: string;
@@ -14,32 +15,36 @@ export function ChatScreen({ initialUsername, onLogout }: ChatScreenProps) {
   const [isWaiting, setIsWaiting] = useState(true);
 
   useEffect(() => {
-    const handleRoomStatusChange = (event: CustomEvent<{ status: 'waiting' | 'ready', other_user?: string }>) => {
-      setIsWaiting(event.detail.status === 'waiting');
+    const handleRoomStatusChange = () => {
+      const userCount = MockStorage.getUserCount();
+      setIsWaiting(userCount !== 2);
+    };
+
+    const handleMessageUpdate = () => {
+      setMessages(MockStorage.getMessages());
     };
 
     const setupRoom = async () => {
       try {
-        const response = await api.joinRoom(initialUsername);
-        setIsWaiting(response.status === 'waiting');
-        
-        // Start listening for messages and room status changes
-        api.startPolling((newMessages) => {
-          setMessages(newMessages);
-        });
+        await api.joinRoom(initialUsername);
+        handleRoomStatusChange(); // Initial status check
+        handleMessageUpdate(); // Initial messages
 
-        // Listen for room status changes
-        window.addEventListener('roomStatusChange', handleRoomStatusChange as EventListener);
+        // Set up event listeners for real-time updates
+        window.addEventListener('roomUpdate', handleRoomStatusChange);
+        window.addEventListener('messageUpdate', handleMessageUpdate);
       } catch (error) {
         console.error('Error joining room:', error);
+        toast.error('Failed to join the room. Please try again.');
       }
     };
 
     setupRoom();
 
     return () => {
-      api.stopPolling();
-      window.removeEventListener('roomStatusChange', handleRoomStatusChange as EventListener);
+      api.leaveRoom().catch(console.error);
+      window.removeEventListener('roomUpdate', handleRoomStatusChange);
+      window.removeEventListener('messageUpdate', handleMessageUpdate);
     };
   }, [initialUsername]);
 

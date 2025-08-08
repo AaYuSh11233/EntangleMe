@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
+import { MockStorage } from "../../api/client";
 
 interface UserNameDialogProps {
   isOpen: boolean;
@@ -14,19 +15,42 @@ export function UserNameDialog({ isOpen, onClose, onGetStarted }: UserNameDialog
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Reset the form when dialog is opened/closed
+  useEffect(() => {
+    if (isOpen) {
+      setUsername("");
+      setIsLoading(false);
+    }
+  }, [isOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username.trim().length < 3) {
+    const trimmedUsername = username.trim();
+    if (trimmedUsername.length < 3) {
       toast.error("Username must be at least 3 characters long");
+      return;
+    }
+
+    // Check if username is already taken
+    const userCount = MockStorage.getUserCount();
+    if (userCount >= 2) {
+      toast.error("The room is full. Please try again later.");
+      return;
+    }
+    
+    const otherUser = MockStorage.getOtherUser("");
+    if (otherUser === trimmedUsername) {
+      toast.error("This username is already taken. Please choose another.");
       return;
     }
 
     setIsLoading(true);
     try {
-      onGetStarted(username.trim());
+      onGetStarted(trimmedUsername);
       setUsername("");
       onClose();
     } catch (error) {
+      console.error('Error in handleSubmit:', error);
       toast.error("Failed to join the room. Please try again.");
     } finally {
       setIsLoading(false);

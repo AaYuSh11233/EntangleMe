@@ -1,70 +1,114 @@
 import { JoinResponse, Message, SendBitResponse } from '../types/chat';
 
-// Simulated storage using localStorage
-class MockStorage {
-  private static USERS_KEY = 'entangleme_users';
-  private static MESSAGES_KEY = 'entangleme_messages';
+// Fast in-memory storage with broadcast
+export class MockStorage {
+  private static users: Set<string> = new Set();
+  private static messages: Message[] = [];
+  private static channel = new BroadcastChannel('entangleme');
+  private static readonly STORAGE_KEY = 'entangleme_state';
   
-  private static getStoredUsers(): string[] {
-    const stored = localStorage.getItem(this.USERS_KEY);
-    return stored ? JSON.parse(stored) : [];
+  static {
+    // Initialize from storage if available
+    try {
+      const savedState = localStorage.getItem(this.STORAGE_KEY);
+      if (savedState) {
+        const { users, messages } = JSON.parse(savedState);
+        this.users = new Set(users);
+        this.messages = messages;
+      }
+    } catch (error) {
+      console.error('Error loading saved state:', error);
+    }
+
+    // Listen for broadcast messages
+    this.channel.onmessage = (event) => {
+      const { type, data } = event.data;
+      switch (type) {
+        case 'ADD_USER':
+          this.users.add(data);
+          window.dispatchEvent(new CustomEvent('roomUpdate'));
+          break;
+        case 'REMOVE_USER':
+          this.users.delete(data);
+          window.dispatchEvent(new CustomEvent('roomUpdate'));
+          break;
+        case 'NEW_MESSAGE':
+          this.messages.push(data);
+          window.dispatchEvent(new CustomEvent('messageUpdate'));
+          break;
+        case 'CLEAR':
+          this.users.clear();
+          this.messages = [];
+          window.dispatchEvent(new CustomEvent('roomUpdate'));
+          window.dispatchEvent(new CustomEvent('messageUpdate'));
+          break;
+      }
+    };
   }
   
-  private static getStoredMessages(): Message[] {
-    const stored = localStorage.getItem(this.MESSAGES_KEY);
-    return stored ? JSON.parse(stored) : [];
+  private static saveState() {
+    const state = {
+      users: Array.from(this.users),
+      messages: this.messages
+    };
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
   }
-  
+
   static addMessage(message: Message) {
-    const messages = this.getStoredMessages();
-    messages.push(message);
-    localStorage.setItem(this.MESSAGES_KEY, JSON.stringify(messages));
+    this.messages.push(message);
+    this.saveState();
+    this.channel.postMessage({ type: 'NEW_MESSAGE', data: message });
   }
   
   static getMessages(): Message[] {
-    return this.getStoredMessages();
+    return [...this.messages];
   }
   
   static addUser(username: string) {
-    const users = this.getStoredUsers();
-    if (!users.includes(username)) {
-      users.push(username);
-      localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
-    }
+    // Remove any old instances of this user first
+    this.users.delete(username);
+    this.users.add(username);
+    this.saveState();
+    this.channel.postMessage({ type: 'ADD_USER', data: username });
   }
   
   static removeUser(username: string) {
-    const users = this.getStoredUsers().filter(u => u !== username);
-    localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+    this.users.delete(username);
+    this.saveState();
+    this.channel.postMessage({ type: 'REMOVE_USER', data: username });
   }
   
   static getUserCount() {
-    return this.getStoredUsers().length;
-  }
-  
-  static getFirstUser() {
-    return this.getStoredUsers()[0];
+    return this.users.size;
   }
   
   static getOtherUser(currentUser: string) {
-    return this.getStoredUsers().find(u => u !== currentUser);
+    return Array.from(this.users).find(u => u !== currentUser);
   }
   
   static clearAll() {
-    localStorage.removeItem(this.MESSAGES_KEY);
-    localStorage.removeItem(this.USERS_KEY);
+    this.users.clear();
+    this.messages = [];
+    localStorage.removeItem(this.STORAGE_KEY);
+    this.channel.postMessage({ type: 'CLEAR' });
   }
-  
-  // Added for real-time updates
-  static onStorageChange(callback: () => void) {
-    window.addEventListener('storage', callback);
-    return () => window.removeEventListener('storage', callback);
+
+  // Cleanup on page unload
+  static {
+    window.addEventListener('unload', () => {
+      // Only clear user data for the current tab
+      const currentUser = Array.from(this.users).pop();
+      if (currentUser) {
+        this.removeUser(currentUser);
+      }
+    });
   }
 }
 
 class ApiClient {
-  private storageListener?: () => void;
   private currentUsername?: string;
+  private messageHandler?: () => void;
+  private roomHandler?: () => void;
 
   // User Operations
   async joinRoom(username: string): Promise<JoinResponse> {
@@ -98,25 +142,22 @@ class ApiClient {
     return { success: true };
   }
 
-  async getMessages(): Promise<Message[]> {
-    return MockStorage.getMessages();
-  }
-
-  // Real-time updates using storage events
+  // Start listening for updates
   startPolling(onMessages: (messages: Message[]) => void) {
-    // Initial messages
+    // Initial state
     onMessages(MockStorage.getMessages());
     
-    // Set up storage event listener for real-time updates
-    this.storageListener = () => {
+    // Message updates
+    this.messageHandler = () => {
       onMessages(MockStorage.getMessages());
-      
-      // Check if user count has changed
+    };
+    window.addEventListener('messageUpdate', this.messageHandler);
+
+    // Room status updates
+    this.roomHandler = () => {
       if (this.currentUsername) {
         const userCount = MockStorage.getUserCount();
         const otherUser = MockStorage.getOtherUser(this.currentUsername);
-        
-        // Dispatch a custom event when room status changes
         window.dispatchEvent(new CustomEvent('roomStatusChange', {
           detail: {
             status: userCount === 2 ? 'ready' : 'waiting',
@@ -125,15 +166,17 @@ class ApiClient {
         }));
       }
     };
-    
-    // Add the storage event listener
-    window.addEventListener('storage', this.storageListener);
+    window.addEventListener('roomUpdate', this.roomHandler);
   }
 
   stopPolling() {
-    if (this.storageListener) {
-      window.removeEventListener('storage', this.storageListener);
-      this.storageListener = undefined;
+    if (this.messageHandler) {
+      window.removeEventListener('messageUpdate', this.messageHandler);
+      this.messageHandler = undefined;
+    }
+    if (this.roomHandler) {
+      window.removeEventListener('roomUpdate', this.roomHandler);
+      this.roomHandler = undefined;
     }
   }
 }
