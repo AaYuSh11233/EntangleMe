@@ -56,6 +56,6 @@ export function ChatScreen({ initialUsername, onLogout }: ChatScreenProps) {
         isWaiting={isWaiting}
         onLeave={onLogout}
       />
-    </MainLayout>
+   </MainLayout>
   );
 } 
