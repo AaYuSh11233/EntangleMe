@@ -9,8 +9,8 @@ export function NotFound() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md mx-auto text-center">
-        <div className="w-full max-w-[300px] mx-auto mb-8">
+      <div className="w-full max-w-2xl mx-auto text-center">
+        <div className="w-full max-w-[500px] mx-auto mb-8">
           <Lottie
             animationData={notFoundAnimation}
             loop={true}

@@ -117,7 +117,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="text-xl md:text-2xl text-gray-300 mb-12"
               >
-                Experience secure messaging powered by quantum teleportation technology
+                Experience a simulation of future quantum networks through secure messaging
               </motion.p>
 
               <motion.div
