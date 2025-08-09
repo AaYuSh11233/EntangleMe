@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { AspectRatio } from "./ui/custom/aspect-ratio";
 import { useState } from "react";
 import { UserNameDialog } from "./chat/UserNameDialog";
+import { QuantumDashboard } from "./quantum/QuantumDashboard";
 
 interface LandingPageProps {
   onGetStarted: (username: string) => void;
@@ -60,6 +61,16 @@ const team = [
 
 export function LandingPage({ onGetStarted }: LandingPageProps) {
   const [showDialog, setShowDialog] = useState(false);
+
+  const scrollToQuantumDashboard = () => {
+    const quantumDashboardSection = document.querySelector('[data-section="quantum-dashboard"]');
+    if (quantumDashboardSection) {
+      quantumDashboardSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-transparent">
@@ -137,6 +148,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
                   size="lg"
                   variant="outline"
                   className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
+                  onClick={scrollToQuantumDashboard}
                 >
                   Learn More
                 </Button>
@@ -160,6 +172,24 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
                 </motion.div>
               ))}
             </motion.div>
+
+            {/* Quantum Dashboard Section */}
+            <motion.section
+              data-section="quantum-dashboard"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="mt-32"
+            >
+              <div className="max-w-6xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                  Quantum Visualization Dashboard
+                </h2>
+                <div className="bg-white/5 rounded-lg p-8 backdrop-blur-sm border border-white/10">
+                  <QuantumDashboard />
+                </div>
+              </div>
+            </motion.section>
 
             <motion.section
               initial={{ opacity: 0 }}

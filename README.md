@@ -69,11 +69,10 @@ We built **EntangleMe** to explore how quantum teleportation could work as a mes
 
 ### Backend (Render)
 - ✅ **Deployed:** [https://entangleme.onrender.com/](https://entangleme.onrender.com/)
-- 🔧 **Configuration:** See [PRODUCTION_DEPLOYMENT.md](PRODUCTION_DEPLOYMENT.md)
 
 ### Frontend (Vercel)
 - ✅ **Deployed:** [https://entangleme.vercel.app/](https://entangleme.vercel.app/)
-- 🔧 **Configuration:** See [PRODUCTION_DEPLOYMENT.md](PRODUCTION_DEPLOYMENT.md)
+
 
 ### Environment Variables
 
