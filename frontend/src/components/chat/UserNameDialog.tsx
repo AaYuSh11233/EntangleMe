@@ -51,8 +51,14 @@ export function UserNameDialog({ isOpen, onClose, onGetStarted }: UserNameDialog
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px] bg-zinc-900 border-zinc-800">
         <DialogHeader>
           <DialogTitle className="text-lg text-white">Welcome to EntangleMe</DialogTitle>
