@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 import uvicorn
+import os
 
 from app.core.config import settings
 from app.api import quantum, chat
@@ -14,6 +15,18 @@ from app.models.database import Base
 async def lifespan(app: FastAPI):
     # Startup
     Base.metadata.create_all(bind=engine)
+    
+    # Reset database in production if RESET_DB environment variable is set
+    if os.getenv("RESET_DB", "false").lower() == "true" or os.getenv("ENVIRONMENT") == "production":
+        print(" Resetting database for production...")
+        try:
+            # Drop all tables and recreate them
+            Base.metadata.drop_all(bind=engine)
+            Base.metadata.create_all(bind=engine)
+            print("✅ Database reset completed")
+        except Exception as e:
+            print(f"⚠️ Database reset failed: {e}")
+    
     yield
     # Shutdown
     pass

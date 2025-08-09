@@ -12,6 +12,7 @@ This is a complete quantum teleportation chat system that simulates quantum enta
 - ✅ Success probability calculation
 - ✅ REST API with FastAPI backend
 - ✅ React + TypeScript frontend
+- ✅ Automatic database reset functionality
 
 ## Prerequisites
 - Python 3.8+
@@ -33,7 +34,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Create .env file
-cp env.example .env
+cp .env.example .env
 # Edit .env with your settings (see below)
 
 # Run the backend
@@ -49,7 +50,7 @@ cd frontend
 npm install
 
 # Create .env file
-cp env.example .env
+cp .env.example .env
 # Edit .env with your settings (see below)
 
 # Run the frontend
@@ -70,11 +71,17 @@ HOST=0.0.0.0
 PORT=8000
 DEBUG=true
 
-# CORS Configuration
-BACKEND_CORS_ORIGINS=["http://localhost:3000","http://localhost:5173"]
+# CORS Configuration (comma-separated list)
+BACKEND_CORS_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:8000,http://localhost:8080,http://127.0.0.1:3000,http://127.0.0.1:5173,http://127.0.0.1:8000,http://127.0.0.1:8080,https://entangleme.vercel.app,https://entangleme.onrender.com
 
 # Database Configuration
 DATABASE_URL=sqlite:///./entangleme.db
+
+# Database Reset Configuration
+# Set to 'true' to reset database on startup (useful for development/testing)
+RESET_DB=false
+# Environment: 'development' or 'production'
+ENVIRONMENT=development
 
 # Redis Configuration (optional)
 REDIS_URL=redis://localhost:6379
@@ -99,72 +106,61 @@ VITE_API_URL=http://localhost:8000/api/v1
 ### Quantum Teleportation Protocol
 1. **Qubit Preparation**: Prepare qubit 0 in classical bit state (0 or 1)
 2. **Bell Pair Creation**: Create entanglement between qubits 1 and 2
-3. **Bell Measurement**: Measure qubits 0 and 1 together
-4. **Conditional Operations**: Apply gates to qubit 2 based on measurement
-5. **Final Measurement**: Measure qubit 2 to recover teleported state
+3. **Bell Measurement**: Perform Bell measurement on qubits 0 and 1
+4. **Conditional Operations**: Apply conditional operations on qubit 2
+5. **Final Measurement**: Measure qubit 2 to recover the teleported state
 
-### API Endpoints
+### Database Reset Functionality
 
-#### Quantum Teleportation
-- `POST /api/v1/quantum/teleport` - Perform quantum teleportation
-- `GET /api/v1/quantum/circuit/{bit}` - Get circuit visualization
-- `POST /api/v1/quantum/simulate` - Simulate teleportation
+The application includes automatic database reset functionality for production deployments:
 
-#### Chat System
-- `POST /api/v1/chat/users` - Create user
-- `POST /api/v1/chat/rooms` - Create room
-- `GET /api/v1/chat/rooms/{room_id}/participants` - Get room participants
-- `GET /api/v1/chat/rooms/{room_id}/messages` - Get messages
-- `DELETE /api/v1/chat/rooms/{room_id}/participants/{user_id}` - Leave room
+#### Environment Variables
 
-## Usage
+- `RESET_DB`: Set to `true` to reset database on startup
+- `ENVIRONMENT`: Set to `production` for production environment
 
-1. **Start both backend and frontend**
-2. **Open browser to** `http://localhost:5173`
-3. **Enter username** and click "Get Started"
-4. **Wait for second user** to join the room
-5. **Send bits (0 or 1)** to perform quantum teleportation
-6. **View quantum details** by clicking the "View Quantum Details" button
+#### Usage
 
-## Testing
+1. **Development**:
+   ```bash
+   # Manual reset
+   python scripts/reset_db.py
+   
+   # Automatic reset on startup
+   RESET_DB=true python run.py
+   ```
 
-### Backend Tests
-```bash
-cd backend
-python test_quantum.py
-```
+2. **Production**:
+   ```bash
+   # Set environment variables in Render
+   RESET_DB=true
+   ENVIRONMENT=production
+   ```
 
-### Frontend Connection Test
-```bash
-cd frontend
-node test-connection.js
-```
+## Deployment
 
-## Architecture
+### Backend (Render)
+1. **Connect repository** to Render
+2. **Set environment variables**:
+   ```bash
+   HOST=0.0.0.0
+   PORT=8000
+   DEBUG=False
+   RESET_DB=true
+   ENVIRONMENT=production
+   SECRET_KEY=your-super-secret-key
+   DATABASE_URL=your-database-url
+   REDIS_URL=your-redis-url
+   ```
+3. **Deploy** → `https://entangleme.onrender.com`
 
-### Backend (FastAPI + Qiskit)
-- **Quantum Service**: Handles quantum teleportation simulation
-- **Chat Service**: Manages users, rooms, and messages
-- **Database**: SQLite with SQLAlchemy ORM
-- **API**: RESTful endpoints with automatic documentation
-
-### Frontend (React + TypeScript)
-- **Real-time Updates**: Polling-based message updates
-- **Quantum Visualization**: Circuit diagrams and teleportation details
-- **Modern UI**: Tailwind CSS + shadcn/ui components
-- **Type Safety**: Full TypeScript integration
-
-## Quantum Circuit Details
-
-The system implements the standard quantum teleportation protocol:
-
-```
-Step 1: Prepare |ψ⟩ = α|0⟩ + β|1⟩ on qubit 0
-Step 2: Create Bell pair |Φ⁺⟩ = (|00⟩ + |11⟩)/√2 on qubits 1,2
-Step 3: Bell measurement on qubits 0,1
-Step 4: Conditional operations on qubit 2
-Step 5: Measure qubit 2 to recover |ψ⟩
-```
+### Frontend (Vercel)
+1. **Connect repository** to Vercel
+2. **Set environment variables**:
+   ```bash
+   VITE_API_URL=https://entangleme.onrender.com/api/v1
+   ```
+3. **Deploy** → `https://entangleme.vercel.app`
 
 ## Troubleshooting
 
@@ -189,29 +185,18 @@ Step 5: Measure qubit 2 to recover |ψ⟩
 - Backend: Set `DEBUG=true` in .env
 - Frontend: Check browser console for API errors
 
-## Development
+### Database Issues
+- **User conflicts**: Use `RESET_DB=true` to reset database
+- **Connection issues**: Check `DATABASE_URL` configuration
+- **Production reset**: Set `ENVIRONMENT=production` and `RESET_DB=true`
 
-### Adding New Features
-1. **Backend**: Add endpoints in `app/api/`
-2. **Frontend**: Add components in `src/components/`
-3. **Types**: Update TypeScript interfaces
-4. **Testing**: Add tests for new functionality
+### CORS Issues
+- **Frontend connection**: Check `BACKEND_CORS_ORIGINS` configuration
+- **Production domains**: Ensure production URLs are in CORS list
 
-### Database Schema
-- **Users**: username, email, online status
-- **Rooms**: name, participants, activity
-- **Messages**: content, quantum state, teleportation results
+## Support
 
-## License
-MIT License - See LICENSE file for details
-
-## Contributing
-1. Fork the repository
-2. Create feature branch
-3. Make changes
-4. Add tests
-5. Submit pull request
-
----
-
-**Enjoy quantum teleportation! 🌀✨**
+For issues with:
+- **Backend deployment**: Check Render logs and environment variables
+- **Frontend deployment**: Check Vercel logs and environment variables
+- **Database reset**: Use the reset script or environment variables
