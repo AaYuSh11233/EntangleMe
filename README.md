@@ -217,7 +217,7 @@ EntangleMe/
 ## 🔗 **External Links**
 
 - 🎯 **Prototype Website:** [https://entangleme.vercel.app/](https://entangleme.vercel.app/)
-- 🎬 **Demo Video:** Coming Soon
+- 🎬 **Demo Video:** [https://youtu.be/0y06cFS6Wwo](https://youtu.be/0y06cFS6Wwo)
 - 🏆 **Devpost Project:** [https://devpost.com/software/entangleme](https://devpost.com/software/entangleme)
 - 🎪 **Hackathon:** [https://cqhack25.devpost.com/](https://cqhack25.devpost.com/)
 
