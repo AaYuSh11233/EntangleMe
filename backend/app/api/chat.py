@@ -77,6 +77,37 @@ async def get_online_users(db: Session = Depends(get_db)):
     ]
 
 # Room endpoints
+@router.get("/rooms", response_model=List[RoomResponse])
+async def get_all_rooms(db: Session = Depends(get_db)):
+    """Get all rooms"""
+    chat_service = ChatService(db)
+    rooms = chat_service.get_all_rooms()
+    
+    room_responses = []
+    for room in rooms:
+        participants = chat_service.get_room_participants(room.id)
+        participant_responses = [
+            UserResponse(
+                id=p.id,
+                username=p.username,
+                email=p.email,
+                is_online=p.is_online,
+                last_seen=p.last_seen,
+                created_at=p.created_at
+            ) for p in participants
+        ]
+        
+        room_responses.append(RoomResponse(
+            id=room.id,
+            name=room.name,
+            created_by=room.created_by,
+            created_at=room.created_at,
+            last_activity=room.last_activity,
+            participants=participant_responses
+        ))
+    
+    return room_responses
+
 @router.post("/rooms", response_model=RoomResponse)
 async def create_room(room_data: RoomCreate, db: Session = Depends(get_db)):
     """Create a new chat room"""

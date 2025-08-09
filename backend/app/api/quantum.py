@@ -7,6 +7,7 @@ from app.database.session import get_db
 from app.services.quantum_service import QuantumTeleportationService
 from app.services.chat_service import ChatService
 from app.schemas.quantum import QuantumTeleportRequest, QuantumTeleportResponse, QuantumError
+from app.schemas.chat import MessageCreate
 from app.core.config import settings
 
 router = APIRouter(prefix="/quantum", tags=["quantum"])
@@ -47,11 +48,11 @@ async def teleport_bit(request: QuantumTeleportRequest, db: Session = Depends(ge
         teleportation_result = quantum_service.execute_teleportation(request.classical_bit)
         
         # Create message in database
-        message_data = {
-            "room_id": request.room_id,
-            "content": request.message_content or f"Teleported bit: {request.classical_bit}",
-            "quantum_state": str(request.classical_bit)
-        }
+        message_data = MessageCreate(
+            room_id=request.room_id,
+            content=request.message_content or f"Teleported bit: {request.classical_bit}",
+            quantum_state=str(request.classical_bit)
+        )
         
         message = chat_service.create_message(
             message_data=message_data,

@@ -76,6 +76,10 @@ class ChatService:
             RoomParticipant.user_id == user_id
         ).all()
     
+    def get_all_rooms(self) -> List[Room]:
+        """Get all rooms"""
+        return self.db.query(Room).all()
+    
     def add_user_to_room(self, room_id: str, user_id: str) -> bool:
         """Add user to room"""
         # Check if user is already in room

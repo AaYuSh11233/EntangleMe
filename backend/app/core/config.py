@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     
     # Server Configuration
-    HOST: str = "0.0.0.0"
+    HOST: str = "localhost"
     PORT: int = 8000
     DEBUG: bool = True
     
