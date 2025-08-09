@@ -3,7 +3,7 @@ import { IconBrandGithub } from "@tabler/icons-react";
 import { AnimatedBackground } from "./ui/custom/animated-background";
 import { Button } from "./ui/button";
 import { AspectRatio } from "./ui/custom/aspect-ratio";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { UserNameDialog } from "./chat/UserNameDialog";
 import { QuantumDashboard } from "./quantum/QuantumDashboard";
 
@@ -62,15 +62,31 @@ const team = [
 export function LandingPage({ onGetStarted }: LandingPageProps) {
   const [showDialog, setShowDialog] = useState(false);
 
-  const scrollToQuantumDashboard = () => {
+  const scrollToQuantumDashboard = useCallback(() => {
+    // Use a more robust approach to find the element
     const quantumDashboardSection = document.querySelector('[data-section="quantum-dashboard"]');
     if (quantumDashboardSection) {
+      // Ensure the element is in the DOM and scrollable
       quantumDashboardSection.scrollIntoView({ 
         behavior: 'smooth',
         block: 'start'
       });
+    } else {
+      // Fallback: scroll to a reasonable position
+      window.scrollTo({
+        top: window.innerHeight * 2,
+        behavior: 'smooth'
+      });
     }
-  };
+  }, []);
+
+  const handleGetStarted = useCallback(() => {
+    setShowDialog(true);
+  }, []);
+
+  const handleCloseDialog = useCallback(() => {
+    setShowDialog(false);
+  }, []);
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-transparent">
@@ -140,7 +156,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
                 <Button
                   size="lg"
                   className="bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 hover:opacity-90 transition-opacity text-white px-8"
-                  onClick={() => setShowDialog(true)}
+                  onClick={handleGetStarted}
                 >
                   Get Started
                 </Button>
@@ -269,7 +285,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
 
       <UserNameDialog
         isOpen={showDialog}
-        onClose={() => setShowDialog(false)}
+        onClose={handleCloseDialog}
         onGetStarted={onGetStarted}
       />
     </div>
