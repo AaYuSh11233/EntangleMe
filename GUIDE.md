@@ -8,6 +8,7 @@
 - [📹 Demo Videos](#-demo-videos)
 - [🧪 Testing Scenarios](#-testing-scenarios)
 - [🔍 Debug Information](#-debug-information)
+- [🗄️ Database Management](#️-database-management)
 
 ---
 
@@ -46,87 +47,58 @@ pip install -r requirements.txt
 python run.py
 
 # Access the API
-# Open: http://localhost:8000/docs
+# Open: https://entangleme.onrender.com/docs
 ```
 
-#### **New: Reset Database Endpoint**
-We've added a new endpoint to reset the database programmatically:
+---
+
+## 🗄️ **Database Management**
+
+### **Reset Database Endpoint**
 
 **Endpoint**: `POST /reset-db`
 
-**Usage with Request Body**:
+**Usage**:
 ```bash
 # Reset the entire database (DANGER: deletes all data!)
-# You must provide confirmation in the request body
-curl -X POST "http://localhost:8000/reset-db" \
+curl -X POST "https://entangleme.onrender.com/reset-db" \
   -H "Content-Type: application/json" \
   -d '{"confirmation": "yes"}'
 
 # Check database status
-curl "http://localhost:8000/db-status"
+curl "https://entangleme.onrender.com/db-status"
 ```
 
-**Response (Success)**:
-```json
-{
-  "status": "success",
-  "message": "Database reset completed successfully",
-  "details": {
-    "tables_dropped": true,
-    "tables_recreated": true,
-    "data_cleared": true
-  },
-  "warning": "All data has been permanently deleted!",
-  "timestamp": "Reset completed at current time"
-}
+### **Database Status Endpoint**
+
+**Endpoint**: `GET /db-status`
+
+**Usage**:
+```bash
+# Get database status (JSON)
+curl "https://entangleme.onrender.com/db-status"
+
+# Get database status (HTML interface)
+# Open: https://entangleme.onrender.com/db-status
 ```
 
-**Response (Confirmation Required)**:
-```json
-{
-  "error": "Confirmation required",
-  "message": "To reset the database, you must provide confirmation='yes' in the request body.",
-  "example": {
-    "confirmation": "yes"
-  },
-  "warning": "This operation will permanently delete all data!"
-}
-```
+### **Standalone HTML Tools**
 
-**Standalone HTML Tools**:
-We've created standalone HTML pages that provide user-friendly interfaces for database management:
+**1. Reset Database Tool**:
+- **Access**: https://entangleme.onrender.com/reset-db
+- **Features**:
+  - Type "yes" in the confirmation field
+  - Click "Reset Database" button
+  - Real-time validation
+  - Loading states and success/error messages
 
-**1. Reset Database Tool** (`reset-database.html`):
-- Open `reset-database.html` in your browser
-- Type "yes" in the confirmation field
-- Click "Reset Database" button
-
-**2. Database Status Tool** (`database-status.html`):
-- Open `database-status.html` in your browser or visit `/db-status` endpoint
-- Real-time database status and information
-- Auto-refresh every 30 seconds
-- Visual representation of tables and record counts
-- Environment and database information
-
-**Custom API URL**: Add `?apiUrl=https://your-api-url.com` to the HTML file URL to use a different backend.
-
-**Features**:
-- ✅ Clean, modern UI with gradient design
-- ✅ Real-time validation (button enables only when "yes" is typed)
-- ✅ Loading states and success/error messages
-- ✅ Mobile-responsive design
-- ✅ Keyboard shortcuts (Ctrl+Enter to submit)
-- ✅ Auto-focus on input field
-- ✅ Warning messages and clear instructions
-- ✅ Auto-refresh database status
-- ✅ Visual table and record count display
-
-**⚠️ Important Notes**:
-- This endpoint will **permanently delete all data**
-- **Confirmation required**: You must provide `{"confirmation": "yes"}` in the request body
-- Use with extreme caution!
-- Best used for development/testing environments
-- No environment variables needed - just confirmation in request body
+**2. Database Status Tool**:
+- **Access**: https://entangleme.onrender.com/db-status
+- **Features**:
+  - Real-time database status and information
+  - Auto-refresh every 30 seconds
+  - Visual representation of tables and record counts
+  - Expandable table sections with actual data
 
 ---
 
@@ -136,19 +108,10 @@ We've created standalone HTML pages that provide user-friendly interfaces for da
 
 **Problem**: When you first enter the site, the "Get Started" and "Learn More" buttons may not be clickable.
 
-**Symptoms**:
-- Buttons appear but don't respond to clicks
-- No visual feedback when hovering or clicking
-- Console may show errors
-
 **Solution**:
 1. **Refresh the page** (Ctrl+F5 or Cmd+Shift+R)
 2. If that doesn't work, clear browser cache and cookies
 3. Try opening in an incognito/private window
-
-**Root Cause**: This is likely due to React component state initialization issues or JavaScript loading problems.
-
-**Prevention**: The team is working on fixing this in the codebase.
 
 ---
 
@@ -156,40 +119,10 @@ We've created standalone HTML pages that provide user-friendly interfaces for da
 
 **Problem**: Users may appear to be connected but are actually disconnected due to browser closure without proper cleanup.
 
-**Scenario**:
-```
-User A (akshad) joins → User B (ayush) joins → Both connected
-User A clicks "Leave" → Properly leaves (backend + browser)
-User B closes browser → Still connected in backend
-User C (athar) joins → Gets connected to User B (who's actually offline)
-```
-
-**Symptoms**:
-- Users appear online but don't respond
-- New users can't join rooms
-- Inconsistent user status
-
-**Solutions**:
-
-#### **Temporary Fix**
-1. **Manual Room Reset**:
-   - Wait for 5-10 minutes (automatic cleanup)
-   - Or restart the backend server
-
-2. **Clear User Sessions**:
-   - Delete browser cache and cookies
-   - Try joining with a different username
-
-#### **Permanent Fix (For Developers)**
-```bash
-# Restart backend server
-cd backend
-pkill -f "python run.py"
-python run.py
-
-# Or clear database (development only)
-rm entangleme.db  # SQLite database
-```
+**Solution**:
+1. **Wait 5-10 minutes** for automatic cleanup
+2. **Restart the backend server**
+3. **Use database reset**: https://entangleme.onrender.com/reset-db
 
 ---
 
@@ -197,27 +130,13 @@ rm entangleme.db  # SQLite database
 
 **Problem**: Quantum teleportation may fail or show incorrect results.
 
-**Symptoms**:
-- Error messages during teleportation
-- Incorrect bit transmission
-- Circuit visualization not working
-
-**Solutions**:
-1. **Check Backend Status**:
-   - Ensure backend is running on `http://localhost:8000`
-   - Check API documentation at `http://localhost:8000/docs`
-
-2. **Verify Quantum Service**:
+**Solution**:
+1. **Check backend status**: https://entangleme.onrender.com/health
+2. **Test quantum endpoint**:
    ```bash
-   # Test quantum endpoint
-   curl -X POST "http://localhost:8000/api/v1/quantum/teleport" \
+   curl -X POST "https://entangleme.onrender.com/api/v1/quantum/teleport" \
         -H "Content-Type: application/json" \
         -d '{"classical_bit": 0}'
-   ```
-
-3. **Check Qiskit Installation**:
-   ```bash
-   pip install qiskit qiskit-aer
    ```
 
 ---
@@ -226,23 +145,11 @@ rm entangleme.db  # SQLite database
 
 **Problem**: Messages or status updates don't appear in real-time.
 
-**Symptoms**:
-- Messages don't appear until page refresh
-- User status not updating
-- Room status stuck
-
-**Solutions**:
-1. **Check Network Connection**:
-   - Ensure stable internet connection
-   - Check if backend is accessible
-
-2. **Browser Compatibility**:
-   - Use Chrome, Firefox, or Edge (latest versions)
-   - Disable ad-blockers temporarily
-
-3. **Clear Browser Data**:
-   - Clear cache and cookies
-   - Try incognito mode
+**Solution**:
+1. Check network connection
+2. Use Chrome, Firefox, or Edge (latest versions)
+3. Clear browser cache and cookies
+4. Try incognito mode
 
 ---
 
@@ -255,7 +162,7 @@ rm entangleme.db  # SQLite database
 
 ### **Bug 2: User Session Cleanup**
 - **Status**: Known Issue
-- **Workaround**: Manual server restart
+- **Workaround**: Manual server restart or database reset
 - **Fix Status**: Planned
 
 ### **Bug 3: Quantum Circuit Rendering**
@@ -269,38 +176,11 @@ rm entangleme.db  # SQLite database
 
 ### **Issue: User Session Persistence**
 
-**Critical Problem**: When users close their browsers without properly leaving rooms, they remain connected in the backend, causing issues for new users.
+**Problem**: When users close their browsers without properly leaving rooms, they remain connected in the backend.
 
-**Impact**:
-- Room capacity appears full when it's actually empty
-- New users can't join rooms
-- Inconsistent user experience
-
-**Current Workaround**:
-1. **For Users**:
-   - Always click "Leave" before closing browser
-   - Use the logout button properly
-   - Wait 5-10 minutes if issues persist
-
-2. **For Developers**:
-   - Implement automatic session cleanup
-   - Add heartbeat mechanism
-   - Implement proper WebSocket cleanup
-
-**Proposed Solution**:
-```python
-# Backend: Add automatic cleanup
-import asyncio
-from datetime import datetime, timedelta
-
-async def cleanup_inactive_sessions():
-    """Clean up inactive user sessions every 5 minutes"""
-    while True:
-        await asyncio.sleep(300)  # 5 minutes
-        # Remove users inactive for more than 10 minutes
-        cutoff_time = datetime.now() - timedelta(minutes=10)
-        # Cleanup logic here
-```
+**Solution**:
+1. **For Users**: Always click "Leave" before closing browser
+2. **For Developers**: Use database reset at https://entangleme.onrender.com/reset-db
 
 ---
 
@@ -310,7 +190,7 @@ async def cleanup_inactive_sessions():
 
 **Description**: This video demonstrates the button responsiveness bug and how to fix it.
 
-**Video Link**: [Insert your video link here]
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/[https://youtu.be/inEV_1-zT_E]" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 **Steps Shown**:
 1. Initial page load with non-responsive buttons
@@ -318,15 +198,13 @@ async def cleanup_inactive_sessions():
 3. Solution: Page refresh
 4. Working buttons after refresh
 
-**Duration**: ~2-3 minutes
-
 ---
 
 ### **Video 2: Room Connection Issues**
 
 **Description**: This video shows the room connection problems and user session issues.
 
-**Video Link**: [Insert your video link here]
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/[INSERT_VIDEO_ID_HERE]" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 **Steps Shown**:
 1. User A joins the room
@@ -336,15 +214,11 @@ async def cleanup_inactive_sessions():
 5. User C tries to join but gets connected to User B (who's offline)
 6. Demonstration of the cleanup issue
 
-**Duration**: ~3-4 minutes
-
 ---
 
 ## 🧪 **Testing Scenarios**
 
 ### **Scenario 1: Basic Functionality Test**
-
-**Objective**: Verify basic application functionality
 
 **Steps**:
 1. Open application in browser
@@ -363,23 +237,13 @@ async def cleanup_inactive_sessions():
 
 ### **Scenario 2: Error Handling Test**
 
-**Objective**: Test application error handling
-
 **Steps**:
 1. Enter username < 3 characters → Should show error
 2. Try to join with existing username → Should handle gracefully
 3. Close browser during active session → Should cleanup properly
 4. Test with slow network → Should show loading states
 
-**Expected Results**:
-- ✅ Proper error messages
-- ✅ Graceful error handling
-- ✅ Loading states displayed
-- ✅ No crashes or freezes
-
 ### **Scenario 3: Multi-User Test**
-
-**Objective**: Test multi-user interactions
 
 **Steps**:
 1. Open application in two browser windows
@@ -388,11 +252,13 @@ async def cleanup_inactive_sessions():
 4. Test quantum teleportation
 5. Test user leaving behavior
 
-**Expected Results**:
-- ✅ Both users can join
-- ✅ Messages exchange properly
-- ✅ Quantum teleportation works
-- ✅ Leave functionality works
+### **Scenario 4: Database Management Test**
+
+**Steps**:
+1. Visit https://entangleme.onrender.com/db-status
+2. Check database status and tables
+3. Visit https://entangleme.onrender.com/reset-db
+4. Test database reset functionality
 
 ---
 
@@ -406,37 +272,53 @@ async def cleanup_inactive_sessions():
 console.log('React version:', React.version);
 
 // Check if API is accessible
-fetch('http://localhost:8000/api/v1/health')
+fetch('https://entangleme.onrender.com/health')
   .then(response => response.json())
   .then(data => console.log('API Status:', data))
   .catch(error => console.error('API Error:', error));
 ```
 
-**Network Tab**:
-- Check for failed requests (red entries)
-- Verify WebSocket connections
-- Monitor API calls
-
 ### **Backend Debug**
-
-**Server Logs**:
-```bash
-# Check backend logs
-cd backend
-python run.py
-
-# Look for error messages in console output
-```
 
 **API Testing**:
 ```bash
 # Test health endpoint
-curl http://localhost:8000/api/v1/health
+curl https://entangleme.onrender.com/health
 
 # Test quantum endpoint
-curl -X POST "http://localhost:8000/api/v1/quantum/teleport" \
+curl -X POST "https://entangleme.onrender.com/api/v1/quantum/teleport" \
      -H "Content-Type: application/json" \
      -d '{"classical_bit": 1}'
+
+# Test database status
+curl https://entangleme.onrender.com/db-status
+
+# Test database reset (DANGER!)
+curl -X POST "https://entangleme.onrender.com/reset-db" \
+     -H "Content-Type: application/json" \
+     -d '{"confirmation": "yes"}'
+```
+
+### **Database Debug**
+
+**Check Database Status**:
+```bash
+# Using curl
+curl https://entangleme.onrender.com/db-status
+
+# Using browser
+# Open: https://entangleme.onrender.com/db-status
+```
+
+**Reset Database**:
+```bash
+# Using curl
+curl -X POST "https://entangleme.onrender.com/reset-db" \
+     -H "Content-Type: application/json" \
+     -d '{"confirmation": "yes"}'
+
+# Using browser
+# Open: https://entangleme.onrender.com/reset-db
 ```
 
 ---
@@ -472,6 +354,7 @@ When reporting issues, please include:
 - [ ] **Real-time updates not working** → Check network and browser
 - [ ] **User appears online but offline** → Wait 5-10 minutes or restart server
 - [ ] **Visualization not showing** → Refresh quantum dashboard
+- [ ] **Database issues** → Use https://entangleme.onrender.com/db-status or reset database
 - [ ] **General issues** → Clear cache and cookies, try incognito mode
 
 ---

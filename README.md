@@ -1,4 +1,5 @@
-# EntangleMe 🌀  
+# EntangleMe 🌀
+
 > A messaging app using **Quantum Teleportation**
 
 **EntangleMe** is a revolutionary messaging application that simulates quantum teleportation for secure message transfer. Built during CQHack25, this project demonstrates how quantum computing principles can be applied to real-world communication systems using **Qiskit** for quantum circuit simulation and **FastAPI** + **React** for the web interface.
@@ -41,6 +42,9 @@
 ### **🔧 Setup & Configuration**
 - ⚙️ **[Setup Guide](SETUP.md)** - Complete installation and setup instructions
 - 🎯 **[Classiq + IonQ Setup](docs/CLASSIQ_IONQ_SETUP.md)** - Quantum hardware integration setup
+
+### **🐛 Testing & Troubleshooting**
+- 🔧 **[Testing & Troubleshooting Guide](GUIDE.md)** - Common issues, solutions, and debugging information
 
 ---
 
@@ -117,7 +121,6 @@ VITE_API_URL=https://entangleme.onrender.com/api/v1
 > **Entangle → Encode → Measure → Send Classical Bits → Apply Corrections**
 
 This is the same foundation used in **quantum internet** and **secure quantum communication**.
---
 
 ### **🎯 How It Works**
 
@@ -131,19 +134,21 @@ This is the same foundation used in **quantum internet** and **secure quantum co
 
 ## 🌟 **Why EntangleMe Matters?**
 
-### **1. Quantum-Resistant Messaging**  
+### **1. Quantum-Resistant Messaging**
 By transforming our simulated teleportation pipeline into a true QKD channel, EntangleMe can use the randomly generated measurement outcomes as shared secret keys. After each teleportation, those key bits encrypt classical payloads—guaranteeing that any eavesdropping attempt is immediately detectable.
 
-### **2. Hybrid Quantum-Classical Workflows**  
+### **2. Hybrid Quantum-Classical Workflows**
 Not all users have direct access to quantum hardware. EntangleMe's modular FastAPI and frontend architecture can be deployed as serverless functions or at the network edge, running lightweight quantum simulations close to the user.
 
-### **3. On-Ramp to the Quantum Internet**  
+### **3. On-Ramp to the Quantum Internet**
 As quantum repeaters and entanglement distribution networks become available, EntangleMe's "simulator-swap" design lets us replace Qiskit's backend with live hardware with minimal code changes.
 
+---
 
-## ⚛️ We Also Used: Classiq to Auto-Generate Teleportation Circuits
+## ⚛️ **We Also Used: Classiq to Auto-Generate Teleportation Circuits**
 
-To simplify or scale the quantum backend, we explored using **Classiq**, a high-level quantum algorithm synthesis platform. Instead of building the quantum circuit manually, Classiq lets us define **intent**, and it builds the optimized circuit for us. 
+To simplify or scale the quantum backend, we explored using **Classiq**, a high-level quantum algorithm synthesis platform. Instead of building the quantum circuit manually, Classiq lets us define **intent**, and it builds the optimized circuit for us.
+
 ---
 
 ## 🎨 **Features**
