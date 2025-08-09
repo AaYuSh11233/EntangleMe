@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Database - EntangleMe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .warning-box h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .warning-box p {
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333, #bd2130);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            display: none;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🌀 EntangleMe</div>
+        <h1 class="title">Reset Database</h1>
+        <p class="description">
+            This tool allows you to reset the EntangleMe database. 
+            <strong>This action will permanently delete all data!</strong>
+        </p>
+
+        <div id="alert" class="alert" style="display: none;"></div>
+
+        <form id="resetForm">
+            <div class="form-group">
+                <label for="confirmation">Type "yes" to confirm database reset:</label>
+                <input 
+                    type="text" 
+                    id="confirmation" 
+                    name="confirmation" 
+                    placeholder="Type 'yes' to confirm..."
+                    autocomplete="off"
+                    required
+                >
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ WARNING</h3>
+                <p>
+                    This will <strong>permanently delete</strong> all users, messages, rooms, 
+                    and any other data in the database. This action is <strong>irreversible</strong> 
+                    and cannot be undone!
+                </p>
+            </div>
+
+            <div class="loading" id="loading">
+                🔄 Resetting database...
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" onclick="window.close()">
+                    Cancel
+                </button>
+                <button 
+                    type="submit" 
+                    class="btn btn-danger" 
+                    id="resetBtn"
+                    disabled
+                >
+                    Reset Database
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const confirmationInput = document.getElementById('confirmation');
+        const resetBtn = document.getElementById('resetBtn');
+        const loading = document.getElementById('loading');
+        const alert = document.getElementById('alert');
+        const form = document.getElementById('resetForm');
+
+        // Get API URL - use current origin if available, otherwise fallback to localhost
+        const getApiUrl = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const customApiUrl = urlParams.get('apiUrl');
+            
+            if (customApiUrl) {
+                return customApiUrl;
+            }
+            
+            // If we're on the same domain, use the current origin
+            if (window.location.origin) {
+                return window.location.origin;
+            }
+            
+            // Fallback to localhost
+            return 'http://localhost:8000';
+        };
+
+        const apiUrl = getApiUrl();
+
+        // Enable/disable reset button based on confirmation
+        confirmationInput.addEventListener('input', function() {
+            const isConfirmed = this.value.toLowerCase() === 'yes';
+            resetBtn.disabled = !isConfirmed;
+            
+            if (isConfirmed) {
+                resetBtn.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+            } else {
+                resetBtn.style.background = '#6c757d';
+            }
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const confirmation = confirmationInput.value;
+            
+            if (confirmation.toLowerCase() !== 'yes') {
+                showAlert('Please type "yes" to confirm the database reset', 'error');
+                return;
+            }
+
+            // Show loading state
+            resetBtn.disabled = true;
+            loading.classList.add('show');
+            hideAlert();
+
+            try {
+                const response = await fetch(`${apiUrl}/reset-db`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ confirmation: confirmation }),
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('✅ Database reset successfully! All data has been permanently deleted.', 'success');
+                    confirmationInput.value = '';
+                    resetBtn.disabled = true;
+                } else {
+                    const errorMessage = data.detail?.message || data.detail || 'Failed to reset database';
+                    showAlert(`❌ Error: ${errorMessage}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error resetting database:', error);
+                showAlert(`❌ Failed to reset database: ${error.message}`, 'error');
+            } finally {
+                // Hide loading state
+                resetBtn.disabled = false;
+                loading.classList.remove('show');
+            }
+        });
+
+        function showAlert(message, type) {
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    hideAlert();
+                }, 5000);
+            }
+        }
+
+        function hideAlert() {
+            alert.style.display = 'none';
+        }
+
+        // Add keyboard shortcut (Ctrl+Enter) to submit
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                if (!resetBtn.disabled) {
+                    form.dispatchEvent(new Event('submit'));
+                }
+            }
+        });
+
+        // Focus on input when page loads
+        window.addEventListener('load', function() {
+            confirmationInput.focus();
+        });
+    </script>
+</body>
+</html> 
