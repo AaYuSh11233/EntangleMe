@@ -19,27 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-## Additional Notices
-
-This project, EntangleMe, includes components and dependencies as described in the README files, including but not limited to:
-
-- Quantum teleportation simulation code using Qiskit and Qiskit-Aer
-- Quantum Circuits using ClassIQ
-- Backend API and chat system implemented with FastAPI, SQLAlchemy, and related Python libraries
-- Frontend code using React, TypeScript, Tailwind CSS, and shadcn/ui
-- Optional integration with Classiq for quantum circuit generation (see README for details)
-- Deployment and configuration scripts for Render, Vercel, and related platforms
-
-All original source code, documentation, and assets in this repository are provided under the MIT License above, unless otherwise noted in specific files.
-
-Third-party libraries and tools are used under their respective licenses. Please refer to their documentation for license details.
-
-If you contribute to this project, you agree that your contributions will be licensed under the MIT License, unless you specify otherwise in your contribution.
-
-For more information, see the README and
-
-
-
