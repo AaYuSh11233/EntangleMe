@@ -117,6 +117,7 @@ VITE_API_URL=https://entangleme.onrender.com/api/v1
 > **Entangle → Encode → Measure → Send Classical Bits → Apply Corrections**
 
 This is the same foundation used in **quantum internet** and **secure quantum communication**.
+--
 
 ### **🎯 How It Works**
 
@@ -139,6 +140,10 @@ Not all users have direct access to quantum hardware. EntangleMe's modular FastA
 ### **3. On-Ramp to the Quantum Internet**  
 As quantum repeaters and entanglement distribution networks become available, EntangleMe's "simulator-swap" design lets us replace Qiskit's backend with live hardware with minimal code changes.
 
+
+## ⚛️ We Also Used: Classiq to Auto-Generate Teleportation Circuits
+
+To simplify or scale the quantum backend, we explored using **Classiq**, a high-level quantum algorithm synthesis platform. Instead of building the quantum circuit manually, Classiq lets us define **intent**, and it builds the optimized circuit for us. 
 ---
 
 ## 🎨 **Features**
