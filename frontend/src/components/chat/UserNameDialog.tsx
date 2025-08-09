@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { MockStorage } from "../../api/client";
+import { api } from "../../api/client";
 
 interface UserNameDialogProps {
   isOpen: boolean;
@@ -31,24 +31,18 @@ export function UserNameDialog({ isOpen, onClose, onGetStarted }: UserNameDialog
       return;
     }
 
-    // Check if username is already taken
-    const userCount = MockStorage.getUserCount();
-    if (userCount >= 2) {
-      toast.error("The room is full. Please try again later.");
-      return;
-    }
-    
-    const otherUser = MockStorage.getOtherUser("");
-    if (otherUser === trimmedUsername) {
-      toast.error("This username is already taken. Please choose another.");
-      return;
-    }
-
     setIsLoading(true);
     try {
-      onGetStarted(trimmedUsername);
-      setUsername("");
-      onClose();
+      // Try to join the room with the username
+      const joinResult = await api.joinRoom(trimmedUsername);
+      
+      if (joinResult.status === 'ready' || joinResult.status === 'waiting') {
+        onGetStarted(trimmedUsername);
+        setUsername("");
+        onClose();
+      } else {
+        toast.error("Failed to join the room. Please try again.");
+      }
     } catch (error) {
       console.error('Error in handleSubmit:', error);
       toast.error("Failed to join the room. Please try again.");
@@ -84,7 +78,7 @@ export function UserNameDialog({ isOpen, onClose, onGetStarted }: UserNameDialog
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
             disabled={isLoading}
           >
-            Join Room
+            {isLoading ? "Joining..." : "Join Room"}
           </Button>
         </form>
       </DialogContent>

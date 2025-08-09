@@ -5,20 +5,43 @@ import { Message } from '@/types/chat';
 import { api } from '@/api/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { QuantumVisualizer } from '../quantum/QuantumVisualizer';
 
 interface ChatRoomProps {
   messages: Message[];
   currentUser: string;
   isWaiting: boolean;
+  otherUser?: string;
   onLeave: () => void;
 }
 
-export function ChatRoom({ messages, currentUser, isWaiting, onLeave }: ChatRoomProps) {
+export function ChatRoom({ messages, currentUser, isWaiting, otherUser, onLeave }: ChatRoomProps) {
+  const [isSending, setIsSending] = useState(false);
+  const [lastTeleportationResult, setLastTeleportationResult] = useState<any>(null);
+
   const handleSendBit = async (bit: 0 | 1) => {
+    if (isSending) return;
+    
+    setIsSending(true);
     try {
-      await api.sendBit(currentUser, bit);
+      const result = await api.sendBit(currentUser, bit);
+      
+      if (result.success) {
+        toast.success(`Successfully teleported bit ${bit}!`);
+        if (result.teleportation_result) {
+          setLastTeleportationResult(result.teleportation_result);
+          console.log('Teleportation result:', result.teleportation_result);
+        }
+      } else {
+        toast.error('Failed to teleport bit');
+      }
     } catch (error) {
       console.error('Error sending bit:', error);
+      toast.error('Failed to send bit. Please try again.');
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -28,6 +51,7 @@ export function ChatRoom({ messages, currentUser, isWaiting, onLeave }: ChatRoom
       onLeave();
     } catch (error) {
       console.error('Error leaving room:', error);
+      onLeave(); // Still leave even if API call fails
     }
   };
 
@@ -43,27 +67,45 @@ export function ChatRoom({ messages, currentUser, isWaiting, onLeave }: ChatRoom
               <div>
                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
                   Entangle Room
-                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+                  <span className={cn(
+                    "px-2 py-1 rounded-full text-xs font-medium",
+                    isWaiting 
+                      ? "bg-yellow-500/20 text-yellow-400" 
+                      : "bg-green-500/20 text-green-400"
+                  )}>
                     {isWaiting ? 'Waiting' : 'Connected'}
                   </span>
                 </h2>
                 <p className="text-sm text-zinc-400">
                   Logged in as <span className="text-blue-400">{currentUser}</span>
+                  {otherUser && (
+                    <span className="ml-2">
+                      • Connected with <span className="text-purple-400">{otherUser}</span>
+                    </span>
+                  )}
                 </p>
               </div>
             </div>
-            <Button 
-              variant="ghost"
-              onClick={handleLeave}
-              className="text-zinc-400 hover:text-red-400 hover:bg-red-500/10"
-            >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+            <div className="flex items-center gap-2">
+              {lastTeleportationResult && (
+                <QuantumVisualizer 
+                  teleportationResult={lastTeleportationResult}
+                  bit={lastTeleportationResult.sent_bit}
+                />
+              )}
+              <Button 
+                variant="ghost"
+                onClick={handleLeave}
+                className="text-zinc-400 hover:text-red-400 hover:bg-red-500/10"
               >
-                Leave Room
-              </motion.div>
-            </Button>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Leave Room
+                </motion.div>
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -114,6 +156,11 @@ export function ChatRoom({ messages, currentUser, isWaiting, onLeave }: ChatRoom
                         <div className="text-lg font-semibold mb-1">
                           {message.bit}
                         </div>
+                        {message.teleportation_result && (
+                          <div className="text-xs text-zinc-300/60 mb-1">
+                            📡 Teleported via quantum entanglement
+                          </div>
+                        )}
                         <div className="text-xs text-zinc-300/80">
                           {message.timestamp}
                         </div>
@@ -135,13 +182,13 @@ export function ChatRoom({ messages, currentUser, isWaiting, onLeave }: ChatRoom
                 "disabled:from-zinc-700 disabled:to-zinc-800 disabled:opacity-50"
               )}
               onClick={() => handleSendBit(0)}
-              disabled={isWaiting}
+              disabled={isWaiting || isSending}
             >
               <motion.div
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Send 0
+                {isSending ? "Teleporting..." : "Send 0"}
               </motion.div>
             </Button>
             <Button 
@@ -151,13 +198,13 @@ export function ChatRoom({ messages, currentUser, isWaiting, onLeave }: ChatRoom
                 "disabled:from-zinc-700 disabled:to-zinc-800 disabled:opacity-50"
               )}
               onClick={() => handleSendBit(1)}
-              disabled={isWaiting}
+              disabled={isWaiting || isSending}
             >
               <motion.div
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Send 1
+                {isSending ? "Teleporting..." : "Send 1"}
               </motion.div>
             </Button>
           </div>
