@@ -190,7 +190,16 @@ curl "https://entangleme.onrender.com/db-status"
 
 **Description**: This video demonstrates the button responsiveness bug and how to fix it.
 
-<iframe width="100%" height="400" src="https://www.youtube.com/embed/[https://youtu.be/inEV_1-zT_E]" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%;">
+  <iframe 
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+    src="https://www.youtube.com/embed/inEV_1-zT_E" 
+    title="Button Responsiveness Bug Demo" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+    allowfullscreen>
+  </iframe>
+</div>
 
 **Steps Shown**:
 1. Initial page load with non-responsive buttons
@@ -204,7 +213,16 @@ curl "https://entangleme.onrender.com/db-status"
 
 **Description**: This video shows the room connection problems and user session issues.
 
-<iframe width="100%" height="400" src="https://www.youtube.com/embed/[INSERT_VIDEO_ID_HERE]" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%;">
+  <iframe 
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+    src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+    title="Room Connection Issues Demo" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+    allowfullscreen>
+  </iframe>
+</div>
 
 **Steps Shown**:
 1. User A joins the room

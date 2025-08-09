@@ -66,7 +66,12 @@ async def root():
         "message": "Welcome to EntangleME - Quantum Teleportation Chat API",
         "version": settings.VERSION,
         "docs": "/docs",
-        "redoc": "/redoc"
+        "redoc": "/redoc",
+        "endpoints": {
+            "health": "/health",
+            "database_status": "/db-status",
+            "reset_database": "/reset-db",
+        }
     }
 
 # Health check endpoint
@@ -229,7 +234,7 @@ async def database_status_endpoint(request: Request):
                                     ORDER BY created_at DESC 
                                     LIMIT 50
                                 """))
-                                data = [dict(row) for row in result]
+                                data = [dict(row) for row in result.mappings()]
                             elif table == "rooms":
                                 # Get room data
                                 result = conn.execute(text(f"""
@@ -238,13 +243,13 @@ async def database_status_endpoint(request: Request):
                                     ORDER BY created_at DESC 
                                     LIMIT 50
                                 """))
-                                data = [dict(row) for row in result]
+                                data = [dict(row) for row in result.mappings()]
                             elif table == "messages":
-                                # Get message data (limit content length)
+                                # Get message data (limit content length using SQLite functions)
                                 result = conn.execute(text(f"""
                                     SELECT id, room_id, sender_id, 
                                            CASE 
-                                               WHEN LENGTH(content) > 100 THEN CONCAT(LEFT(content, 100), '...')
+                                               WHEN length(content) > 100 THEN substr(content, 1, 100) || '...'
                                                ELSE content 
                                            END as content,
                                            quantum_state, status, created_at 
@@ -252,7 +257,7 @@ async def database_status_endpoint(request: Request):
                                     ORDER BY created_at DESC 
                                     LIMIT 50
                                 """))
-                                data = [dict(row) for row in result]
+                                data = [dict(row) for row in result.mappings()]
                             elif table == "room_participants":
                                 # Get room participant data
                                 result = conn.execute(text(f"""
@@ -261,11 +266,11 @@ async def database_status_endpoint(request: Request):
                                     ORDER BY joined_at DESC 
                                     LIMIT 50
                                 """))
-                                data = [dict(row) for row in result]
+                                data = [dict(row) for row in result.mappings()]
                             else:
                                 # Generic data for other tables
                                 result = conn.execute(text(f"SELECT * FROM {table} LIMIT 50"))
-                                data = [dict(row) for row in result]
+                                data = [dict(row) for row in result.mappings()]
                             
                             # Convert datetime objects to strings for JSON serialization
                             for item in data:
