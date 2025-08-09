@@ -8,6 +8,7 @@ export interface Message {
   sender: string;
   bit: 0 | 1;
   timestamp: string;
+  teleportation_result?: any; // Quantum teleportation data
 }
 
 export interface JoinResponse {
@@ -17,8 +18,10 @@ export interface JoinResponse {
 
 export interface SendBitResponse {
   success: boolean;
+  teleportation_result?: any; // Quantum teleportation result
 }
 
 export interface User {
   username: string;
+  id: string;
 } 
