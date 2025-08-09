@@ -27,6 +27,7 @@ SOFTWARE.
 This project, EntangleMe, includes components and dependencies as described in the README files, including but not limited to:
 
 - Quantum teleportation simulation code using Qiskit and Qiskit-Aer
+- Quantum Circuits using ClassIQ
 - Backend API and chat system implemented with FastAPI, SQLAlchemy, and related Python libraries
 - Frontend code using React, TypeScript, Tailwind CSS, and shadcn/ui
 - Optional integration with Classiq for quantum circuit generation (see README for details)
@@ -39,3 +40,4 @@ Third-party libraries and tools are used under their respective licenses. Please
 If you contribute to this project, you agree that your contributions will be licensed under the MIT License, unless you specify otherwise in your contribution.
 
 For more information, see the README and
+
