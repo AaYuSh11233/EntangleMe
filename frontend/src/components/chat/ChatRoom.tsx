@@ -2,6 +2,7 @@ import { Card } from '../ui/card';
 import { ScrollArea } from '../ui/scroll-area';
 import { Button } from '../ui/button';
 import { Message } from '@/types/chat';
+import { TeleportationResult } from '@/types/quantum';
 import { api } from '@/api/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -19,7 +20,7 @@ interface ChatRoomProps {
 
 export function ChatRoom({ messages, currentUser, isWaiting, otherUser, onLeave }: ChatRoomProps) {
   const [isSending, setIsSending] = useState(false);
-  const [lastTeleportationResult, setLastTeleportationResult] = useState<any>(null);
+  const [lastTeleportationResult, setLastTeleportationResult] = useState<TeleportationResult | null>(null);
 
   const handleSendBit = async (bit: 0 | 1) => {
     if (isSending) return;
@@ -90,7 +91,7 @@ export function ChatRoom({ messages, currentUser, isWaiting, otherUser, onLeave 
               {lastTeleportationResult && (
                 <QuantumVisualizer 
                   teleportationResult={lastTeleportationResult}
-                  bit={lastTeleportationResult.sent_bit}
+                  bit={lastTeleportationResult.sent_bit as 0 | 1}
                 />
               )}
               <Button 

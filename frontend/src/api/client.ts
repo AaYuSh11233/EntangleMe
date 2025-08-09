@@ -8,8 +8,8 @@ class ApiClient {
   private currentUsername?: string;
   private currentUserId?: string;
   private roomId?: string;
-  private messageHandler?: () => void;
-  private roomHandler?: () => void;
+  private messageHandler?: NodeJS.Timeout;
+  private roomHandler?: NodeJS.Timeout;
 
   async getUserByUsername(username: string) {
     const res = await fetch(`${API_BASE_URL}/chat/users/${username}`);
@@ -21,6 +21,23 @@ class ApiClient {
   async joinRoom(username: string): Promise<JoinResponse> {
     try {
       console.log('Joining room with username:', username);
+
+      // Check if user is already in a room
+      if (this.currentUsername === username && this.currentUserId && this.roomId) {
+        console.log('User already in room, checking current status...');
+        // Get current room participants to check status
+        const participantsResponse = await fetch(`${API_BASE_URL}/chat/rooms/${this.roomId}/participants`);
+        if (participantsResponse.ok) {
+          const participants = await participantsResponse.json();
+          console.log('Current room participants:', participants);
+          const otherUser = participants.find((p: any) => p.id !== this.currentUserId);
+          
+          return {
+            status: participants.length === 2 ? 'ready' : 'waiting',
+            other_user: otherUser?.username
+          };
+        }
+      }
 
       // Try to create user first
       let userData;
@@ -56,27 +73,89 @@ class ApiClient {
       this.currentUserId = userData.id;
       this.currentUsername = username;
 
-      // Join the default room
-      const roomResponse = await fetch(`${API_BASE_URL}/chat/rooms`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: 'Entangle Room',
-          participant_ids: [this.currentUserId]
-        })
-      });
-
-      if (!roomResponse.ok) {
-        const errorText = await roomResponse.text();
-        console.error('Room creation failed:', roomResponse.status, errorText);
-        throw new Error(`Failed to join room: ${roomResponse.status} ${errorText}`);
+      // Use fixed room name for all users
+      const FIXED_ROOM_NAME = 'Entangle Room';
+      
+      // First, try to find the fixed room by name
+      let roomData;
+      let foundRoom = false;
+      
+      try {
+        // Get all rooms and find the fixed room
+        const allRoomsResponse = await fetch(`${API_BASE_URL}/chat/rooms`);
+        if (allRoomsResponse.ok) {
+          const allRooms = await allRoomsResponse.json();
+          console.log('All rooms:', allRooms);
+          
+          // Find the fixed room by name
+          for (const room of allRooms) {
+            if (room.name === FIXED_ROOM_NAME) {
+              console.log('Found fixed room:', room);
+              roomData = room;
+              this.roomId = room.id;
+              foundRoom = true;
+              break;
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Could not fetch all rooms:', error);
       }
 
-      const roomData = await roomResponse.json();
-      console.log('Room created:', roomData);
-      this.roomId = roomData.id;
+      // If fixed room doesn't exist, create it
+      if (!foundRoom) {
+        console.log('Creating fixed room...');
+        const createRoomResponse = await fetch(`${API_BASE_URL}/chat/rooms`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: FIXED_ROOM_NAME,
+            participant_ids: [this.currentUserId]
+          })
+        });
+
+        if (!createRoomResponse.ok) {
+          const errorText = await createRoomResponse.text();
+          console.error('Room creation failed:', createRoomResponse.status, errorText);
+          throw new Error(`Failed to create room: ${createRoomResponse.status} ${errorText}`);
+        }
+
+        roomData = await createRoomResponse.json();
+        console.log('Fixed room created:', roomData);
+        this.roomId = roomData.id;
+      } else {
+        // Add user to the existing fixed room if not already in it
+        try {
+          const participantsResponse = await fetch(`${API_BASE_URL}/chat/rooms/${this.roomId}/participants`);
+          if (participantsResponse.ok) {
+            const participants = await participantsResponse.json();
+            const isUserInRoom = participants.some((p: any) => p.id === this.currentUserId);
+            
+            if (!isUserInRoom) {
+              console.log('Adding user to fixed room...');
+              // Use the join room endpoint
+              const joinResponse = await fetch(`${API_BASE_URL}/chat/rooms/join`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  room_id: this.roomId,
+                  user_id: this.currentUserId
+                })
+              });
+
+              if (!joinResponse.ok) {
+                console.log('Could not join room, but continuing...');
+              }
+            }
+          }
+        } catch (error) {
+          console.log('Error adding user to room:', error);
+        }
+      }
 
       // Get room participants
       const participantsResponse = await fetch(`${API_BASE_URL}/chat/rooms/${this.roomId}/participants`);
@@ -200,10 +279,24 @@ class ApiClient {
       }
 
       const result = await response.json();
-    return {
+      return {
         success: result.result.success,
-        receiverState: result.result.received_bit,
-        classicalBits: result.result.classical_bits
+        sent_bit: result.result.sent_bit,
+        received_bit: result.result.received_bit,
+        classical_bits: result.result.classical_bits,
+        receiver_state: result.result.receiver_state,
+        teleportation_data: result.result.teleportation_data || {
+          circuit: result.result.circuit_data || {},
+          measurements: result.result.teleportation_data?.measurements || [],
+          gates: result.result.teleportation_data?.gates || [],
+          steps: result.result.teleportation_data?.steps || []
+        },
+        success_probability: result.result.success_probability || 1.0,
+        measurement_results: result.result.measurement_results || {
+          classical_bits: result.result.classical_bits,
+          received_bit: result.result.received_bit,
+          success: result.result.success
+        }
       };
     } catch (error) {
       console.error('Error simulating teleportation:', error);
@@ -226,6 +319,9 @@ class ApiClient {
 
   // Start polling for updates
   startPolling(onMessages: (messages: Message[]) => void, onRoomUpdate: (status: string) => void) {
+    // Stop any existing polling first
+    this.stopPolling();
+
     const pollMessages = async () => {
       try {
         const messages = await this.getMessages();

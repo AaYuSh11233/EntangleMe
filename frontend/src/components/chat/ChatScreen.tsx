@@ -44,7 +44,7 @@ export function ChatScreen({ initialUsername, onLogout }: ChatScreenProps) {
     return () => {
       api.stopPolling();
     };
-  }, [initialUsername, handleMessageUpdate, handleRoomStatusChange]);
+  }, [initialUsername]); // Only depend on initialUsername
 
   return (
     <MainLayout>
