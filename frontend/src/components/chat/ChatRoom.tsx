@@ -128,7 +128,7 @@ export function ChatRoom({ messages, currentUser, isWaiting, otherUser, onLeave 
               </div>
             </motion.div>
           ) : (
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 py-4 min-h-full flex flex-col justify-end">
               <AnimatePresence>
                 {messages.map((message, index) => {
                   const isCurrentUser = message.sender === currentUser;

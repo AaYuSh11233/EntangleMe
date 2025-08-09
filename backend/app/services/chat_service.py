@@ -138,7 +138,7 @@ class ChatService:
         """Get messages for a room"""
         return self.db.query(Message).filter(
             Message.room_id == room_id
-        ).order_by(desc(Message.created_at)).offset(offset).limit(limit).all()
+        ).order_by(Message.created_at.asc()).offset(offset).limit(limit).all()
     
     def update_message_status(self, message_id: str, status: str, teleportation_result: Optional[Dict] = None) -> Optional[Message]:
         """Update message status (e.g., after quantum teleportation)"""

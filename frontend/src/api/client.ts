@@ -10,6 +10,7 @@ class ApiClient {
   private roomId?: string;
   private messageHandler?: NodeJS.Timeout;
   private roomHandler?: NodeJS.Timeout;
+  private currentStatus: string = 'waiting';
 
   async getUserByUsername(username: string) {
     const res = await fetch(`${API_BASE_URL}/chat/users/${username}`);
@@ -258,7 +259,12 @@ class ApiClient {
       return messages.map((msg: any) => ({
         sender: msg.sender_username,
         bit: msg.quantum_state ? parseInt(msg.quantum_state) : 0,
-        timestamp: new Date(msg.created_at).toLocaleTimeString(),
+        timestamp: new Date(msg.created_at).toLocaleTimeString('en-IN', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }),
         teleportation_result: msg.teleportation_result
       }));
     } catch (error) {
@@ -338,7 +344,25 @@ class ApiClient {
           if (participantsResponse.ok) {
             const participants = await participantsResponse.json();
             const status = participants.length === 2 ? 'ready' : 'waiting';
+            const previousStatus = this.currentStatus;
+            this.currentStatus = status;
+            
             onRoomUpdate(status);
+            
+            // Handle message polling based on room status
+            if (status === 'ready' && previousStatus !== 'ready') {
+              // Room just became ready - start message polling
+              console.log('Starting message polling - 2 users in room');
+              pollMessages(); // Initial poll
+              this.messageHandler = setInterval(pollMessages, 2000);
+            } else if (status === 'waiting' && previousStatus === 'ready') {
+              // Room just became waiting - stop message polling
+              console.log('Stopping message polling - less than 2 users in room');
+              if (this.messageHandler) {
+                clearInterval(this.messageHandler);
+                this.messageHandler = undefined;
+              }
+            }
           }
         } catch (error) {
           console.error('Error polling room status:', error);
@@ -346,12 +370,10 @@ class ApiClient {
       }
     };
 
-    // Initial poll
-    pollMessages();
+    // Initial poll for room status
     pollRoomStatus();
 
-    // Set up polling interval
-    this.messageHandler = setInterval(pollMessages, 2000);
+    // Set up room status polling interval
     this.roomHandler = setInterval(pollRoomStatus, 3000);
   }
 
@@ -364,6 +386,7 @@ class ApiClient {
       clearInterval(this.roomHandler);
       this.roomHandler = undefined;
     }
+    this.currentStatus = 'waiting';
   }
 }
 
