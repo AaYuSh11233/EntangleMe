@@ -10,7 +10,7 @@ This document provides **visual proof** that EntangleMe implements **real quantu
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              FRONTEND LAYER                                  │
+│                              FRONTEND LAYER                                 │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐              │
 │  │   Landing Page  │  │   Chat Room     │  │ Quantum Viz     │              │
 │  │   (React/TS)    │  │   (Real-time)   │  │   (Circuit)     │              │
