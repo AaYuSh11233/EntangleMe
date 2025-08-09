@@ -59,7 +59,7 @@ To simplify or scale the quantum backend, we explored using **Classiq**, a high-
 ---
 ## 🌐 Links
 
-- 🔗 **Prototype Website:** [your-site-url.vercel.app]
+- 🔗 **Prototype Website:** [https://entangleme.vercel.app/]
 - 📽 **Demo Video:** [YouTube / Loom Link]
 - 🚀 **Devpost Project:** [https://devpost.com/software/entangleme]
 - 🎯 **Hackathon:** [https://cqhack25.devpost.com/]
