@@ -2,7 +2,7 @@ import { JoinResponse, Message, SendBitResponse } from '../types/chat';
 import { TeleportationResult } from '../types/quantum';
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://entangleme.onrender.com/api/v1' : 'http://localhost:8000/api/v1');
 
 class ApiClient {
   private currentUsername?: string;

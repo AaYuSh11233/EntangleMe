@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, List
 import os
 
 class Settings(BaseSettings):
@@ -9,21 +9,32 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     
     # Server Configuration
-    HOST: str = "localhost"
-    PORT: int = 8000
-    DEBUG: bool = True
+    HOST: str = os.getenv("HOST", "0.0.0.0")  # Allow external connections
+    PORT: int = int(os.getenv("PORT", "8000"))
+    DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
     
     # CORS Configuration
-    BACKEND_CORS_ORIGINS: list = ["http://localhost:3000", "http://localhost:5173"]
+    BACKEND_CORS_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173", 
+        "http://localhost:8000",
+        "http://localhost:8080",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:8000",
+        "http://127.0.0.1:8080",
+        "https://entangleme.vercel.app",  # Production frontend
+        "https://entangleme.onrender.com"  # Production backend
+    ]
     
     # Database Configuration
-    DATABASE_URL: str = "sqlite:///./entangleme.db"
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./entangleme.db")
     
     # Redis Configuration
-    REDIS_URL: str = "redis://localhost:6379"
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379")
     
     # JWT Configuration
-    SECRET_KEY: str = "your-secret-key-change-in-production"
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
