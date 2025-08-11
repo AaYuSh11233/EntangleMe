@@ -125,50 +125,61 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           </header>
 
           <main className="py-20">
-            <div className="max-w-4xl mx-auto text-center mb-32">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="relative"
-              >
-                <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-blue-600 pb-2">
-                  Quantum Chat for the Future
-                </h1>
-                <div className="absolute -inset-x-20 top-0 h-[400px] w-[800px] bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 blur-2xl" />
-              </motion.div>
-              
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-xl md:text-2xl text-gray-300 mb-12"
-              >
-                Experience a simulation of future quantum networks through secure messaging
-              </motion.p>
+            {/* Button interaction isolation container */}
+            <div className="relative z-50 pointer-events-auto" style={{ isolation: 'isolate' }}>
+              <div className="max-w-4xl mx-auto text-center mb-32">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="relative"
+                >
+                  <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-blue-600 pb-2">
+                    Quantum Chat for the Future
+                  </h1>
+                  <div className="absolute -inset-x-20 top-0 h-[400px] w-[800px] bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 blur-2xl" />
+                </motion.div>
+                
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="text-xl md:text-2xl text-gray-300 mb-12"
+                >
+                  Experience a simulation of future quantum networks through secure messaging
+                </motion.p>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="flex gap-4 justify-center"
-              >
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 hover:opacity-90 transition-opacity text-white px-8"
-                  onClick={handleGetStarted}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="flex gap-4 justify-center"
                 >
-                  Get Started
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
-                  onClick={scrollToQuantumDashboard}
-                >
-                  Learn More
-                </Button>
-              </motion.div>
+                  {/* Isolated button container to prevent interference */}
+                  <div className="relative z-50 pointer-events-auto isolate">
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 hover:opacity-90 transition-opacity text-white px-8 relative z-50"
+                      onClick={handleGetStarted}
+                      style={{ position: 'relative', zIndex: 50 }}
+                    >
+                      Get Started
+                    </Button>
+                  </div>
+                  
+                  <div className="relative z-50 pointer-events-auto isolate">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="border-blue-500 text-blue-400 hover:bg-blue-500/10 relative z-50"
+                      onClick={scrollToQuantumDashboard}
+                      style={{ position: 'relative', zIndex: 50 }}
+                    >
+                      Learn More
+                    </Button>
+                  </div>
+                </motion.div>
+              </div>
             </div>
 
             <motion.div
